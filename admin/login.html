@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <title></title>
+    <link rel="stylesheet" href="static/css/common.css">
+    <link rel="stylesheet" href="static/css/elementui.css">
+    <script src="static/js/lib/vue.js"></script>
+    <script src="static/js/lib/axios.min.js"></script>
+    <script src="static/js/lib/request.js"></script>
+    <script src="static/js/lib/elementui.js"></script>
+    <script src="static/js/login.js"></script>
+    <style>
+        .SignFlowHomepage{
+            /*background-image: url(./static/img/sign_bg.db29b0fb.png);*/
+            background-repeat: no-repeat;
+            background-color: #b8e5f8;
+            background-size: cover;
+            width: 100%;
+            height: 100vh;
+            overflow: auto;
+        }
+        .SignFlowHomepage .SignFlowHomepage-content{
+            -webkit-box-flex: 1;
+            -ms-flex: 1 1;
+            flex: 1 1;
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            border-radius: 2px;
+            min-height: 688px;
+            height: calc(100% - 42px);
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .Card {
+            margin-bottom: 10px;
+            background: #fff;
+            border-radius: 2px;
+            -webkit-box-shadow: 0 1px 3px rgba(26,26,26,.1);
+            box-shadow: 0 1px 3px rgba(26,26,26,.1);
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            padding-top: 60px;
+        }
+        .SignContainer-content {
+            width: 432px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .SignContainer-content  .el-form-item__content{
+            margin-right: 88px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="SignFlowHomepage">
+        <div class="SignFlowHomepage-content">
+            <div class="Card SignContainer-content">
+
+                <el-form :model="form" status-icon ref="form" label-width="100px" class="demo-ruleForm">
+                    <el-form-item label="账号" prop="name">
+                        <el-input v-model.number="form.username" @keyup.enter.native="onSubmit()" placeholder="请输入登录账户"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="password">
+                        <el-input type="password" v-model="form.password" @keyup.enter.native="onSubmit()"  placeholder="请输入登录密码" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="验证码" prop="password">
+                        <el-input type="text" v-model="form.code" @keyup.enter.native="onSubmit()" autocomplete="off"  placeholder="请输入验证码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="onSubmit()" :loading="btnLoading">提交</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
