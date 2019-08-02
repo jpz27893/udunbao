@@ -20,6 +20,7 @@ var app = function (){
                 visible : false,
                 form : {},
                 btnLoading : false,
+                btnDisabled : false,
                 action : null,
                 table : {},
                 rules : {
@@ -91,7 +92,15 @@ var app = function (){
         created(){
             this.poll();
         },
-
+        watch: {
+            'dialog.visible': function (newDate, oldDate) {
+                if(newDate){
+                    this.dialog.btnDisabled = false;
+                }else{
+                    this.dialog.btnDisabled = true;
+                }
+            }
+        },
         methods:{
 
             poll(){

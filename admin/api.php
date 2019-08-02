@@ -33,6 +33,7 @@ class Api{
             '127.0.0.1',
             '202.178.116.123',
             '103.197.105.114',
+            '192.168.31.179'
         ];
 
         if(!in_array(get_client_ip(),$ip)){
@@ -309,6 +310,7 @@ class Api{
                         'bank_name' => trim(str_replace('"','',$value[0])),
                         'card_number' => trim(str_replace('"','',$value[1])),
                         'name' => trim(str_replace('"','',$value[2])),
+                        'create_ip' => get_client_ip(),
                         'status' => -1,
                         'created_at' => date('Y-m-d H:i:s',strtotime(trim(str_replace('"','',$value[5])))),
                         'updated_at' => date('Y-m-d H:i:s',strtotime(trim(str_replace('"','',$value[6])))),
@@ -359,6 +361,134 @@ class Api{
             error("更新失败");
         }
     }
+
+
+
+    //银行卡管理
+    /**
+     * 获取银行卡
+     */
+    private function getBanks(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+
+        $where = [];
+        $card_no = $this->request['card_no']?:'';
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($card_no !==''){
+            $where['AND']['card_no'] = $card_no;
+        }
+
+        if($range !== ''){
+            $range = explode(',',$range);
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+        $where['ORDER'] = [$orderBy => $sort];
+        $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        success([
+            'list'  => $list?:[],
+            'total' => $this->db->count('banks','*',$where)?:0,
+            'count' => count($list)
+        ]);
+    }
+
+    /**
+     * 设置主卡
+     */
+    private function bankMain(){
+        $id = $this->request['id'];
+        $main = $this->request['main'];
+
+        if(in_array($main,[1,2])){
+
+            $this->db->update('banks',[
+                'main'=>$main
+            ],[
+                "id" => $id
+            ]);
+
+            $this->db->update('banks',[
+                'main'=> 1
+            ],[
+                "id[!]" => $id
+            ]);
+
+            success('设置成功');
+        }else{
+            error('设置错误');
+        }
+
+    }
+
+    /**
+     * 卡池设置
+     */
+    private function cardPoolSite(){
+        $open = $this->request['open'] == 2?2:1;
+        $sub_card_money = $this->request['sub_card_money'];
+        $main_to_sub = $this->request['main_to_sub'];
+        $main_card_money = $this->request['main_card_money'];
+
+        if(!is_numeric($sub_card_money) || !is_numeric($main_to_sub) || !is_numeric($main_card_money)){
+            error('输入金额无效');
+        }
+
+        if(floor($sub_card_money) != $sub_card_money || floor($main_to_sub) != $main_to_sub || floor($main_card_money) != $main_card_money ){
+            error('输入金额不是整数');
+        }
+
+        if($sub_card_money < 0 || $main_to_sub < 0 || $main_card_money < 0){
+            error('输入金额不能小于0');
+        }
+
+
+        $result = $this->db->get('banks_config','*',['user_id'=>$this->user['id']]);
+
+        $date = date("Y-m-d H:i:s");
+        if($result){
+            $this->db->update('banks_config',[
+                'open'=>$open,
+                'sub_card_money'=>$sub_card_money,
+                'main_to_sub'=>$main_to_sub,
+                'main_card_money'=>$main_card_money,
+                'updated_at'=>$date,
+            ],[
+                'user_id'=>$this->user['id']
+            ]);
+        }else{
+            $this->db->insert('banks_config',[
+                'user_id'=>$this->user['id'],
+                'open'=>$open,
+                'sub_card_money'=>$sub_card_money,
+                'main_to_sub'=>$main_to_sub,
+                'main_card_money'=>$main_card_money,
+                'created_at'=>$date,
+                'updated_at'=>$date,
+
+            ]);
+        }
+
+        success('设置成功');
+    }
+
+    /**
+     * 获取卡池配置
+     */
+
+    private function cardPool(){
+        $result = $this->db->get('banks_config','*',['user_id'=>$this->user['id']]);
+        success($result);
+    }
+
+
 }
 
 new Api($active , $_POST);

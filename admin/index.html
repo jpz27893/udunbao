@@ -67,13 +67,14 @@
                     <el-button icon="el-icon-plus" @click="onDialogSite">添加</el-button>
                     <el-upload
                             class="upload-csv"
+                            :disabled="uploadLoading"
                             :show-file-list="false"
                             :headers="token"
                             :on-progress="uploadProgress"
                             :on-success="uploadSuccess"
                             :on-error="uploadError"
                             action="api.php?a=uploadCsv">
-                        <el-button size="small" type="primary" :loading="uploadLoading">上传</el-button>
+                        <el-button size="small" icon="el-icon-upload2" :loading="uploadLoading">上传</el-button>
                     </el-upload>
                 </el-form-item>
             </el-form>
@@ -284,7 +285,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialog.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading">确 定</el-button>
+                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
                     </el-form-item>
                 </el-form>
             </el-dialog>
