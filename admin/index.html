@@ -31,6 +31,9 @@
                 <el-form-item label="外部订单号">
                     <el-input v-model="query.out_order_no" placeholder="请输入外部订单号" clearable></el-input>
                 </el-form-item>
+                <el-form-item label="卡号">
+                    <el-input v-model="query.card_number" placeholder="请输入卡号" clearable></el-input>
+                </el-form-item>
                 <el-form-item label="姓名">
                     <el-input v-model="query.name" placeholder="请输入姓名" clearable></el-input>
                 </el-form-item>
@@ -200,6 +203,10 @@
                             <tr>
                                 <td>姓名</td>
                                 <td>{{dialog.table.name}}</td>
+                            </tr>
+                            <tr>
+                                <td>确认工号</td>
+                                <td>{{dialog.table.worker || '-'}}</td>
                             </tr>
                             <tr>
                                 <td>创建时间</td>

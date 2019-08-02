@@ -32,6 +32,7 @@ class Api{
             '103.231.62.9',
             '127.0.0.1',
             '202.178.116.123',
+            '103.197.105.114',
         ];
 
         if(!in_array(get_client_ip(),$ip)){
@@ -231,7 +232,7 @@ class Api{
             'AND' => [
                 'card_number' => $card_number,
                 'money' => $money,
-                'status[!]' => -2,
+                'status[!]' => [-2,3],
                 'created_at[>]' => date('Y-m-d')." 00:00:00"
             ]
 
@@ -247,6 +248,7 @@ class Api{
             'bank_name' => $bank_name,
             'card_number' => $card_number,
             'name' => $name,
+            'create_ip' => get_client_ip(),
             'status' => $status,
             'created_at' => $date,
             'updated_at' => $date
@@ -335,7 +337,7 @@ class Api{
         $id = $this->request['id'];
         $worker = preg_replace('# #','',$this->request['worker']);
 
-        if(empty($worker)){
+        if(empty($worker) && strlen($worker) < 3){
             error('非法操作');
         }
 
@@ -348,7 +350,8 @@ class Api{
 
         $updateStatus = $this->db->update("orders", [
             "status" => 0,
-            "worker" => $worker
+            "worker" => $worker,
+            "confirm_ip" => get_client_ip()
         ],$where);
         if($updateStatus){
             success("更新成功");

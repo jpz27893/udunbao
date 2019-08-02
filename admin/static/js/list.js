@@ -1,5 +1,5 @@
 var app = function (){
-    new Vue({
+    var instance  = new Vue({
         el: '#app',
         data : {
             query : {
