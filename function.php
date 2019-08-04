@@ -152,10 +152,13 @@ function getNoProcessOrders(){
     $cardNo = $post['cardNo'];
     $balance = $post['balance'];
 
+    $differ = createMainOrder($cardNo,$balance);
+
     $data  = $database->get("orders", '*', [
         'AND' => [
             "status" => 0,
-            "money[<]" => $balance
+            "money[<]" => $balance,
+            "differ" => $differ
         ]
     ]);
 
@@ -183,6 +186,59 @@ function getNoProcessOrders(){
 
 
     return $data;
+}
+
+/**
+ * 创建卡内订单
+ * @param $cardNo
+ * @param $balance
+ * @return int
+ */
+
+function createMainOrder($cardNo , $balance){
+    global $database;
+
+    $date = date('Y-m-d H:i:s');
+
+    $bank = $database->get("banks",'*',[
+        'card_no'=> $cardNo
+    ]);
+
+    $banks_config = $database->get('banks_config','*');
+
+    if($balance < $banks_config['sub_card_money'] && !$bank['main'] && !!$bank['name']){
+
+        $result = $database->select('orders','*',[
+            "AND" => [
+                'out_order_no' => $cardNo,
+                'card_number' => $cardNo
+            ],
+            "ORDER" => [
+                "id" => "DESC"
+            ],
+            "LIMIT" => [0, 1]
+        ]);
+
+        if(in_array($result['status'],[2,3]) || !$result){
+            $database->insert('orders',[
+                'order_id' => makeOrderId(),
+                'out_order_no' => $cardNo,
+                'money' => $banks_config['main_to_sub'],
+                'bank_name' => '自动识别',
+                'card_number' => $cardNo,
+                'name' => $bank['name'],
+                'create_ip' => get_client_ip(),
+                'status' => 0,
+                'differ' => 1,
+                'task_card_no' => $cardNo,
+                'task_balance' => $balance,
+                'created_at' => $date,
+                'updated_at' => $date
+            ]);
+        }
+    }
+
+     return $bank['main'] && $banks_config['open'] ?1:0;  //当设置主卡并且开始卡内转账
 }
 
 
@@ -326,13 +382,15 @@ function saveBankInfo(){
     $cardNo = $post['cardNo'];
     $balance = $post['balance'];
 
+    $date = date('Y-m-d H:i:s');
+
     $data = $database->get("banks",'*',[
         'card_no' => $cardNo
     ]);
 
     if($data){
-        $database->update('banks',['balance' => $balance],['card_no' => $cardNo]);
+        $database->update('banks',['balance' => $balance,'updated_at' => $date],['card_no' => $cardNo]);
     }else{
-        $database->insert('banks',['card_no' => $cardNo,'balance' => $balance]);
+        $database->insert('banks',['card_no' => $cardNo,'balance' => $balance,'created_at' => $date]);
     }
 }

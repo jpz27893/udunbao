@@ -129,12 +129,27 @@ class Api{
     }
 
     /**
+     * 查询管理员
+     */
+    private function admins(){
+        if($this->user['id'] == 1){
+            $admins = $this->db->select('admins',[
+                "id",
+                "nickname"
+            ]);
+            success($admins);
+        }
+        error('非法操作');
+    }
+
+    /**
      * 获取订单
      */
     private function orders(){
-        $orderBy = 'id';
+        $orders= $this->user['id'] == 1?'orders.':'';
+        $orderBy = $orders.'id';
         $sort = 'DESC';
-        $where = ['AND'=>['status[!]'=>-2]];
+        $where = ['AND'=>[$orders.'status[!]'=>-2]];
         $order_id = $this->request['order_id']?:'';
         $out_order_no = $this->request['out_order_no']?:'';
         $bank_name = $this->request['bank_name']?:'';
@@ -145,58 +160,89 @@ class Api{
         $money = isset($this->request['money'])? floatval($this->request['money']) :'';
         $page = intval($this->request['page']) ?: 1;
         $count = intval($this->request['count'])?:10;
+        $admin = intval($this->request['admin'])?:'';
 
         $offset = ($page - 1) * $count;
         $limit  = $count;
 
-
-        if($this->user['id'] != 1){
-            $where['AND']['user_id'] = $this->user['id'];
-        }
-
         if($order_id !==''){
-            $where['AND']['order_id'] = $order_id;
+            $where['AND'][$orders.'order_id'] = $order_id;
         }
 
         if($out_order_no !==''){
-            $where['AND']['out_order_no'] = $out_order_no;
+            $where['AND'][$orders.'out_order_no'] = $out_order_no;
         }
 
         if($bank_name !==''){
-            $where['AND']['bank_name'] = $bank_name;
+            $where['AND'][$orders.'bank_name'] = $bank_name;
         }
 
         if($card_number !==''){
-            $where['AND']['card_number'] = $card_number;
+            $where['AND'][$orders.'card_number'] = $card_number;
         }
 
         if($name !==''){
-            $where['AND']['name'] = $name;
+            $where['AND'][$orders.'name'] = $name;
         }
 
         if($status !==''){
-            $where['AND']['status'] = $status;
+            $where['AND'][$orders.'status'] = $status;
         }
 
         if($money !==''){
-            $where['AND']['money'] = $money;
+            $where['AND'][$orders.'money'] = $money;
         }
 
         if($range !== ''){
             $range = explode(',',$range);
-            $where['AND']['created_at[>=]'] = $range[0];
-            $where['AND']['created_at[<=]'] = $range[1];
+            $where['AND'][$orders.'created_at[>=]'] = $range[0];
+            $where['AND'][$orders.'created_at[<=]'] = $range[1];
         }
 
         $where['ORDER'] = [$orderBy => $sort];
-        $orders = $this->db->select('orders','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
-
+        if ($this->user['id'] != 1){
+            $where['AND'][$orders.'user_id'] = $this->user['id'];
+            $orders = $this->db->select('orders','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+            $total = $this->db->count('orders','*',$where);
+        }else{
+            if($admin !== ''){
+                $where['AND']['orders.user_id'] = $admin;
+            }
+            $orders = $this->db->select('orders', [
+                "[><]admins" => ['user_id'=>'id'],
+            ],[
+                "orders.id",
+                "orders.user_id",
+                "admins.username",
+                "orders.order_id",
+                "orders.out_order_no",
+                "orders.money",
+                "orders.bank_name",
+                "orders.card_number",
+                "orders.name",
+                "orders.status",
+                "orders.differ",
+                "orders.msg",
+                "orders.create_ip",
+                "orders.confirm_ip",
+                "orders.worker",
+                "orders.task_card_no",
+                "orders.task_balance",
+                "orders.created_at",
+                "orders.updated_at"
+            ],array_merge($where,['LIMIT'=>[$offset,$limit]]));
+            $total = $this->db->count('orders',[
+                "[><]admins" => ['user_id'=>'id'],
+            ],[
+                "orders.id"
+            ],$where);
+        }
 
         success([
             'banks' => $this->db->select('banks' , '*'),
             'list'  => $orders,
-            'total' => $this->db->count('orders','*',$where),
+            'total' => $total,
             'count' => count($orders)
         ]);
     }
@@ -392,7 +438,6 @@ class Api{
         }
         $where['ORDER'] = [$orderBy => $sort];
         $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
-
         success([
             'list'  => $list?:[],
             'total' => $this->db->count('banks','*',$where)?:0,
@@ -407,7 +452,16 @@ class Api{
         $id = $this->request['id'];
         $main = $this->request['main'];
 
-        if(in_array($main,[1,2])){
+        if(in_array($main,[0,1])){
+
+            $result = $this->db->get('banks_config','*');
+            if($result && $main == 0){
+                $this->db->update('banks_config',[  //全部为副卡时，关闭卡内转账
+                    'open'=> 0
+                ],[
+                    "id" => $result['id']
+                ]);
+            }
 
             $this->db->update('banks',[
                 'main'=>$main
@@ -416,7 +470,7 @@ class Api{
             ]);
 
             $this->db->update('banks',[
-                'main'=> 1
+                'main'=> 0
             ],[
                 "id[!]" => $id
             ]);
@@ -432,7 +486,7 @@ class Api{
      * 卡池设置
      */
     private function cardPoolSite(){
-        $open = $this->request['open'] == 2?2:1;
+        $open = $this->request['open'] == 1?1:0;
         $sub_card_money = $this->request['sub_card_money'];
         $main_to_sub = $this->request['main_to_sub'];
         $main_card_money = $this->request['main_card_money'];
@@ -449,8 +503,12 @@ class Api{
             error('输入金额不能小于0');
         }
 
+        $main = $this->db->get('banks','*',['main'=>1]);
+        if(!$main){
+            error('请先设置主卡');
+        }
 
-        $result = $this->db->get('banks_config','*',['user_id'=>$this->user['id']]);
+        $result = $this->db->get('banks_config','*');
 
         $date = date("Y-m-d H:i:s");
         if($result){
@@ -461,11 +519,10 @@ class Api{
                 'main_card_money'=>$main_card_money,
                 'updated_at'=>$date,
             ],[
-                'user_id'=>$this->user['id']
+                'id'=>$result['id']
             ]);
         }else{
             $this->db->insert('banks_config',[
-                'user_id'=>$this->user['id'],
                 'open'=>$open,
                 'sub_card_money'=>$sub_card_money,
                 'main_to_sub'=>$main_to_sub,
@@ -475,17 +532,30 @@ class Api{
 
             ]);
         }
-
         success('设置成功');
     }
 
     /**
      * 获取卡池配置
      */
-
     private function cardPool(){
-        $result = $this->db->get('banks_config','*',['user_id'=>$this->user['id']]);
+        $result = $this->db->get('banks_config','*');
         success($result);
+    }
+
+    /**
+     * 修改姓名
+     */
+    private function editBank(){
+        $id = $this->request['id'];
+        $name = $this->request['name'];
+
+        $this->db->update('banks',[
+            'name'=>$name
+        ],[
+            'id'=>$id
+        ]);
+        success('设置成功');
     }
 
 

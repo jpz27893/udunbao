@@ -1,3 +1,4 @@
+/*
 var app = function (){
     new Vue({
         el: '#app',
@@ -63,22 +64,6 @@ var app = function (){
                     ],
                 }
             },
-            dialogEdit:{
-                visible: false,
-                btnLoading: false,
-                btnDisabled: true,
-                form : {
-                    id: 0,
-                    card_no: 0,
-                    name: ''
-                },
-                rules : {
-                    name : [
-                        { required: true, message: '姓名不能为空', trigger: 'blur' },
-                        { pattern:  /^[A-Za-z\u4e00-\u9fa5]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
-                    ]
-                }
-            }
         },
         created(){
             this.init();
@@ -91,15 +76,6 @@ var app = function (){
                     this.dialog.btnDisabled = true;
                     this.$refs.dialogForm && this.$refs.dialogForm.resetFields();
                     this.$refs.dialogForm && this.$refs.dialogForm.clearValidate();
-                }
-            },
-            'dialogEdit.visible': function (newDate, oldDate) {
-                if(newDate){
-                    this.dialogEdit.btnDisabled = false;
-                }else{
-                    this.dialogEdit.btnDisabled = true;
-                    this.$refs.dialogEditForm && this.$refs.dialogEditForm.resetFields();
-                    this.$refs.dialogEditForm && this.$refs.dialogEditForm.clearValidate();
                 }
             }
         },
@@ -122,6 +98,12 @@ var app = function (){
                 })
                     .then(res => {
                         let {data} = res;
+                        if(! data.success){
+                            if(data.errMsg.indexOf('Unauthorized') !== -1){
+                                return location.href = 'login.html';
+                            }
+                            this.$message.error(data.errMsg);
+                        }
                         this.tableLoading = false;
                         this.tableData = data.data;
                         cb && cb();
@@ -160,37 +142,39 @@ var app = function (){
             },
             //打开卡池设置
             onDialogSite(){
-                this.cardPollLoading = true;
-                request.get('api.php?a=cardPool')
-                    .then( res =>{
-                        let {data} = res;
-                        if(data.data){
-                            let result = Object.assign({},data.data);
-                            result.open = [data.data.open];
-                            result.sub_card_money = parseInt(data.data.sub_card_money);
-                            result.main_to_sub = parseInt(data.data.main_to_sub);
-                            result.main_card_money = parseInt(data.data.main_card_money);
-                            this.dialog.form = result;
-                        }
+                if(this.cardPollLoading === false){
+                    this.cardPollLoading = true;
+                    request.get('api.php?a=cardPool')
+                        .then( res =>{
+                            let {data} = res;
+                            if(data.data){
+                                let result = data.data;
+                                result.open = [data.open];
+                                result.sub_card_money = parseInt(result.sub_card_money);
+                                result.main_to_sub = parseInt(result.main_to_sub);
+                                result.main_card_money = parseInt(result.main_card_money);
+                                this.dialog.form = result;
+                            }
 
-                        this.dialog.visible = true;
-                        this.cardPollLoading = false;
-                    })
-                    .catch(err =>{
-                        this.cardPollLoading = false;
-                        this.$message.error(err);
-                    })
+                            this.dialog.visible = true;
+                            this.cardPollLoading = false;
+                        })
+                        .catch(err =>{
+                            this.cardPollLoading = false;
+                            this.$message.error(err);
+                        })
+                }
             },
             //发送卡池配置数据
-            onDialogFormSubmit(){
+            dialogFormSubmit(){
                 this.$refs.dialogForm.validate((valid) => {
                     if (valid) {
                         this.dialog.btnLoading = true;
                         let data = Object.assign({},this.dialog.form);
                         data.open = this.dialog.form.open.find(function(element) {
-                            return element == 1;
+                            return element == 2;
                         });
-                        data.open = data.open == 1?1:0;
+                        data.open = data.open == 2?2:1;
                         request.post('api.php?a=cardPoolSite',data)
                             .then( res =>{
                                 let {data} = res;
@@ -208,36 +192,10 @@ var app = function (){
                             })
                     }
                 })
-            },
-            onDialogEdit(row){
-                this.dialogEdit.visible = true;
-                this.dialogEdit.form = Object.assign({},row);
-            },
-            onDialogEditFormSubmit(){
-                this.$refs.dialogEditForm.validate((valid) => {
-                    if (valid) {
-                        this.dialogEdit.btnLoading = true;
-                        request.post('api.php?a=editBank',this.dialogEdit.form)
-                            .then( res =>{
-                                let {data} = res;
-                                if(data.success){
-                                    this.$message.success(data.data);
-                                }else{
-                                    this.$message.error(data.errMsg);
-                                }
-                                this.dialogEdit.visible = false;
-                                this.dialogEdit.btnLoading = false;
-                                this.netTableData(true);
-                            })
-                            .catch(err =>{
-                                this.dialogEdit.btnLoading = false;
-                                this.$message.error(err);
-                            })
-                    }
-                })
             }
         }
     })
 };
 
 window.onload = app;
+*/

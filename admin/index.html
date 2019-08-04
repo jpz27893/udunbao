@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/css/elementui.css">
     <script src="static/js/lib/vue.js"></script>
     <script src="static/js/lib/axios.min.js"></script>
+    <script src="static/js/lib/base64.js"></script>
     <script src="static/js/lib/request.js"></script>
     <script src="static/js/lib/elementui.js"></script>
     <script src="static/js/lib/qs.js"></script>
@@ -17,13 +18,10 @@
 <body>
 
 <div id="app">
-<!--    <head-component :activeIndex="1"></head-component>-->
+    <head-component active-index="1"></head-component>
     <div class="index">
         <template>
             <h4 class="title">订单管理中心</h4>
-
-
-
             <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
                 <el-form-item label="订单号">
                     <el-input v-model="query.order_id" placeholder="请输入订单号" clearable></el-input>
@@ -39,6 +37,12 @@
                 </el-form-item>
                 <el-form-item label="金额">
                     <el-input v-model="query.money" placeholder="请输入金额" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="管理员" v-if="admin.id == 1">
+                    <el-select v-model="query.admin" placeholder="请选择管理员" clearable>
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="(item, index) in admins" :label="item.nickname" :value="item.id" :key="item.id"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="订单状态">
                     <el-select v-model="query.status" placeholder="请选择订单状态" clearable>
@@ -106,6 +110,12 @@
                         width="80px"
                         prop="id"
                         label="id">
+                </el-table-column>
+                <el-table-column
+                        v-if="admin.id == 1"
+                        width="100px"
+                        prop="username"
+                        label="管理员账号">
                 </el-table-column>
                 <el-table-column
                         prop="out_order_no"

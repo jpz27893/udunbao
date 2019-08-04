@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
-    <title>银行卡管理-出款管理后台</title>
+    <title>管理员管理-出款管理后台</title>
     <link rel="stylesheet" href="static/css/common.css">
     <link rel="stylesheet" href="static/css/elementui.css">
     <script src="static/js/lib/vue.js"></script>
@@ -13,18 +13,18 @@
     <script src="static/js/lib/elementui.js"></script>
     <script src="static/js/lib/qs.js"></script>
     <script src="components/head.js"></script>
-    <script src="static/js/banks.js"></script>
+    <script src="static/js/admin.js"></script>
 </head>
 <body>
 
-<div id="app">
-    <head-component active-index="2"></head-component>
+<!--<div id="app">
+    <head-component active-index="4"></head-component>
     <div class="index">
         <template>
-            <h4 class="title">银行卡管理</h4>
+            <h4 class="title">管理员管理</h4>
             <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
-                <el-form-item label="银行卡账号">
-                    <el-input v-model="query.card_no" placeholder="请输入银行卡" clearable></el-input>
+                <el-form-item label="管理员账号">
+                    <el-input v-model="query.card_no" placeholder="请输入管理员账号" clearable></el-input>
                 </el-form-item>
 
                 <el-form-item label="时间">
@@ -41,7 +41,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button icon="el-icon-setting" @click="onDialogSite()" :loading="cardPollLoading">卡池设置</el-button>
+                    <el-button icon="el-icon-setting" @click="onDialogSite" :loading="cardPollLoading">卡池设置</el-button>
                 </el-form-item>
             </el-form>
 
@@ -66,11 +66,6 @@
                         label="余额">
                 </el-table-column>
                 <el-table-column
-                        width="100px"
-                        prop="name"
-                        label="姓名">
-                </el-table-column>
-                <el-table-column
                         prop="created_at"
                         label="创建时间">
                 </el-table-column>
@@ -82,20 +77,13 @@
                     <template slot-scope="scope">
                         <el-switch
                                 v-model="scope.row.main"
-                                inactive-value="0"
-                                active-value="1"
+                                inactive-value="1"
+                                active-value="2"
                                 active-color="#13ce66"
                                 inactive-color="#ff4949"
                                 @change="onBankMain(scope.row)">
                         </el-switch>
 
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button
-                                size="mini"
-                                @click="onDialogEdit(scope.row)" >编辑</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -115,10 +103,12 @@
                     title="卡池设置"
                     :visible.sync="dialog.visible"
                     width="600px">
+
                 <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" class="form-small">
+
                     <el-form-item label="1." prop="open">
                         <el-checkbox-group v-model="dialog.form.open">
-                            <el-checkbox label="1" name="open">开启卡内转账</el-checkbox>
+                            <el-checkbox label="2" name="open">开启卡内转账</el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                     <el-form-item label="2." prop="sub_card_money">
@@ -132,33 +122,13 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialog.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="onDialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
+                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
                     </el-form-item>
                 </el-form>
             </el-dialog>
-
-            <el-dialog
-                    title="银行卡编辑"
-                    :visible.sync="dialogEdit.visible"
-                    width="600px">
-                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules" label-width="110px" class="form-small" @submit.native.prevent>
-                    <el-form-item label="卡号" prop="card_no">
-                        <!--<el-input v-model="dialogEdit.form.card_no" placeholder="0"></el-input>-->
-                        <span>{{dialogEdit.form.card_no}}</span>
-                    </el-form-item>
-                    <el-form-item label="姓名" prop="name">
-                        <el-input v-model="dialogEdit.form.name" maxlength="8" placeholder="请输入姓名"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button @click="dialogEdit.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="onDialogEditFormSubmit()" :loading="dialogEdit.btnLoading" :disabled="dialogEdit.btnDisabled">确 定</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-dialog>
-
         </template>
     </div>
-</div>
+</div>-->
 
 </body>
 </html>
