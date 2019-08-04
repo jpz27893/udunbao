@@ -241,7 +241,7 @@ var app = function (){
              */
             onSearch(){
                 this.query.page = 1;
-                this.netTableData();
+                this.netTableData(true);
             },
 
             /**
