@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="76ffc15e-5446-46e2-a606-7b12aae28a73" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/admin/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/static/js/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/js/list.js" afterDir="false" />
-    </list>
+    <list default="true" id="76ffc15e-5446-46e2-a606-7b12aae28a73" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,8 +31,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/admin/api.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="338" lean-forward="true" selection-start-line="338" selection-end-line="338" />
+            <state relative-caret-position="380">
+              <caret line="344" column="31" lean-forward="true" selection-start-line="344" selection-start-column="31" selection-end-line="344" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -183,18 +178,18 @@
       <option name="presentableId" value="Default" />
       <updated>1564708277927</updated>
       <workItem from="1564708279108" duration="1656000" />
-      <workItem from="1564719309684" duration="13244000" />
+      <workItem from="1564719309684" duration="13341000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14900000" />
+    <option name="totallyTimeSpent" value="14997000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25266525" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25266525" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -207,7 +202,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.329718" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.329718" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -263,8 +258,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/admin/api.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="338" lean-forward="true" selection-start-line="338" selection-end-line="338" />
+        <state relative-caret-position="380">
+          <caret line="344" column="31" lean-forward="true" selection-start-line="344" selection-start-column="31" selection-end-line="344" selection-end-column="31" />
         </state>
       </provider>
     </entry>
