@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <title>管理员管理-出款管理后台</title>
+    <link rel="stylesheet" href="static/css/common.css">
+    <link rel="stylesheet" href="static/css/elementui.css">
+    <script src="static/js/lib/vue.js"></script>
+    <script src="static/js/lib/axios.min.js"></script>
+    <script src="static/js/lib/base64.js"></script>
+    <script src="static/js/lib/request.js"></script>
+    <script src="static/js/lib/elementui.js"></script>
+    <script src="static/js/lib/qs.js"></script>
+    <script src="components/head.js"></script>
+    <script src="static/js/admin.js"></script>
+</head>
+<body>
+
+<!--<div id="app">
+    <head-component active-index="4"></head-component>
+    <div class="index">
+        <template>
+            <h4 class="title">管理员管理</h4>
+            <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
+                <el-form-item label="管理员账号">
+                    <el-input v-model="query.card_no" placeholder="请输入管理员账号" clearable></el-input>
+                </el-form-item>
+
+                <el-form-item label="时间">
+                    <el-date-picker
+                            v-model="query.range"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            align="right">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSearch">查询</el-button>
+                    <el-button icon="el-icon-setting" @click="onDialogSite" :loading="cardPollLoading">卡池设置</el-button>
+                </el-form-item>
+            </el-form>
+
+            <el-table
+                    :data="tableData.list"
+                    v-loading="tableLoading"
+                    border
+                    size="small"
+                    style="width: 100%">
+                <el-table-column
+                        width="80px"
+                        prop="id"
+                        label="id">
+                </el-table-column>
+                <el-table-column
+                        prop="card_no"
+                        label="银行卡">
+                </el-table-column>
+                <el-table-column
+                        width="100px"
+                        prop="balance"
+                        label="余额">
+                </el-table-column>
+                <el-table-column
+                        prop="created_at"
+                        label="创建时间">
+                </el-table-column>
+                <el-table-column
+                        prop="updated_at"
+                        label="更新时间">
+                </el-table-column>
+                <el-table-column prop="main" label="设为主卡">
+                    <template slot-scope="scope">
+                        <el-switch
+                                v-model="scope.row.main"
+                                inactive-value="1"
+                                active-value="2"
+                                active-color="#13ce66"
+                                inactive-color="#ff4949"
+                                @change="onBankMain(scope.row)">
+                        </el-switch>
+
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="block" style="margin-top: 20px; text-align: right">
+                <el-pagination
+                        @size-change="handleSizeChange"
+                        :current-page.sync="query.page"
+                        @current-change="handleCurrentChange"
+                        :page-size="query.count"
+                        layout="sizes ,prev, pager, next"
+                        :total="tableData.total">
+                </el-pagination>
+            </div>
+
+
+            <el-dialog
+                    title="卡池设置"
+                    :visible.sync="dialog.visible"
+                    width="600px">
+
+                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" class="form-small">
+
+                    <el-form-item label="1." prop="open">
+                        <el-checkbox-group v-model="dialog.form.open">
+                            <el-checkbox label="2" name="open">开启卡内转账</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="2." prop="sub_card_money">
+                        副卡金额小于<el-input v-model="dialog.form.sub_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>主卡自动转入
+                    </el-form-item>
+                    <el-form-item label="3." prop="main_to_sub">
+                        每次转入<el-input v-model="dialog.form.main_to_sub" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>
+                    </el-form-item>
+                    <el-form-item label="4." prop="main_card_money">
+                        主卡金额小于<el-input v-model="dialog.form.main_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>报警
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button @click="dialog.visible = false">取 消</el-button>
+                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </template>
+    </div>
+</div>-->
+
+</body>
+</html>

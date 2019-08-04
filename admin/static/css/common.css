@@ -100,7 +100,13 @@ ul,ol,li{
     color: #000;
 }
 
-
+.head-menu.el-menu{
+    padding-left: 10%;
+}
+.head-menu.el-menu .el-menu-item{
+    margin: 0 20px;
+    padding: 0;
+}
 .index{
     width: 80%;
     margin: 20px auto;
@@ -197,4 +203,7 @@ ul,ol,li{
     background:#f5f5f5;
     font-weight: bold;
     color: #888888;
+}
+.form-small .el-input{
+    width: 170px;
 }

@@ -2,6 +2,7 @@ var app = function (){
     var instance  = new Vue({
         el: '#app',
         data : {
+            admin: getAdmin(),
             query : {
                 count : 10,
                 page : 1
@@ -11,6 +12,7 @@ var app = function (){
                 count : 0,
                 total : 0
             },
+            admins: [],
             banks : [],
             banksLoading : false,
             tableLoading : false,
@@ -20,6 +22,7 @@ var app = function (){
                 visible : false,
                 form : {},
                 btnLoading : false,
+                btnDisabled : false,
                 action : null,
                 table : {},
                 rules : {
@@ -90,8 +93,19 @@ var app = function (){
         },
         created(){
             this.poll();
+            if(this.admin.id == 1){
+                this.init();
+            }
         },
-
+        watch: {
+            'dialog.visible': function (newDate, oldDate) {
+                if(newDate){
+                    this.dialog.btnDisabled = false;
+                }else{
+                    this.dialog.btnDisabled = true;
+                }
+            }
+        },
         methods:{
 
             poll(){
@@ -100,18 +114,25 @@ var app = function (){
                 },1000)
             },
 
+            init(){
+                this.netAdmins();
+            },
+            netAdmins(){
+                request.get('api.php?a=admins')
+                    .then(res => {
+                        let {data} = res;
+                        this.admins = data.data;
+                    })
+                    .catch(err=>{
+                        this.$message.error(err);
+                    })
+            },
             netBanks(loading ,cb){
                 this.banksLoading = loading;
                 request.get('api.php?a=banks')
                     .then(res => {
                         let {data} = res;
 
-                        if(! data.success){
-                            if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                return location.href = 'login.html';
-                            }
-                            this.$message.error(data.errMsg);
-                        }
                         this.banksLoading = false;
                         this.banks = data.data || [];
                         cb && cb();
@@ -175,13 +196,6 @@ var app = function (){
 
                                 let {data} = res;
 
-                                if(! data.success){
-                                    if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                        return location.href = 'login.html';
-                                    }
-                                    return this.$message.error(data.errMsg);
-                                }
-
                                 if(parseInt(data.data.status) === -1){
                                     this.$confirm('今天已经给 '+this.dialog.form.name+' 转过 '+this.dialog.form.money+'元，请确认是否继续?', '提示', {
                                         confirmButtonText: '确定',
@@ -219,12 +233,6 @@ var app = function (){
                     .then( res =>{
                         let {data} = res;
 
-                        if(! data.success){
-                            if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                return location.href = 'login.html';
-                            }
-                            return this.$message.error(data.errMsg);
-                        }
                         this.netTableData(true);
                         this.closeDialog();
                     })
@@ -281,18 +289,10 @@ var app = function (){
                     query.push(key+'='+value)
                 });
                 if(query.length) query.unshift('&');
-
                 request.get('api.php?a=orders'+query.join('&'),this.query)
                     .then(res => {
                         let {data} = res;
 
-                        console.log(data)
-                        if(! data.success){
-                            if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                return location.href = 'login.html';
-                            }
-                            this.$message.error(data.errMsg);
-                        }
                         this.banksLoading = false;
                         this.tableLoading = false;
                         this.tableData = data.data;
@@ -349,12 +349,6 @@ var app = function (){
                     .then( res =>{
                         let {data} = res;
 
-                        if(! data.success){
-                            if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                return location.href = 'login.html';
-                            }
-                            return this.$message.error(data.errMsg);
-                        }
                         this.netTableData(true);
                         this.closeDialog();
                      })
