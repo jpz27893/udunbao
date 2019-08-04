@@ -1,3 +1,4 @@
+
 var app = function (){
     var instance  = new Vue({
         el: '#app',
@@ -16,6 +17,8 @@ var app = function (){
             banks : [],
             banksLoading : false,
             tableLoading : false,
+            moneySplitTip : false,
+            moneySplitArr : [],
             dialog : {
                 title : '',
                 width : '600px',
@@ -52,6 +55,12 @@ var app = function (){
                                 if ( parseFloat(value) > 50000) {
                                     callback(new Error('转账金额不能大于50000'));
                                 }else{
+                                    instance.moneySplitArr = instance.orderSplits(value);
+                                    if(instance.moneySplitArr){
+                                        instance.moneySplitTip = true
+                                    }else{
+                                        instance.moneySplitTip = false
+                                    }
                                     callback();
                                 }
                             },trigger: 'change'}
@@ -93,7 +102,7 @@ var app = function (){
         },
         created(){
             this.poll();
-            if(this.admin.id == 1){
+            if(parseInt(this.admin.id)  === 1){
                 this.init();
             }
         },
@@ -107,6 +116,58 @@ var app = function (){
             }
         },
         methods:{
+
+            /**
+             * 订单拆分
+             * @returns {boolean|Array}
+             */
+            orderSplits(money){
+                if(money >= 5000){
+                    let stroke = 0; // 最优拆分笔数
+                    let max = 4999; // 每笔最大金额
+
+                    for(let i = 0 ; i< 20;i++){ // 通过循环取得最大且小于5000的笔数
+                        let mean = money / i;
+                        if(mean <= max){
+                            stroke = i;
+                            break;
+                        }
+                    }
+
+                    let every = parseInt(money/stroke),
+                        residue = money - (every * stroke),
+                        splits = [];
+
+                    // let sum = 0;
+                    // let find = false;
+                    for(let i = 0; i<stroke;i++){
+                        let temp = every + residue;
+                        if(temp >= max){
+                            splits[i] = max;
+                            residue = temp - max;
+                        }else{
+                            splits[i] = temp;
+                            residue = 0;
+                        }
+
+                        // sum+=splits[i];
+                        // if(arr[i] > 4999){
+                        //     console.error('平均有问题');
+                        // }
+                    }
+
+                    return splits;
+                    // if(sum !== money){
+                    //     console.error('总和有问题');
+                    // }
+
+                    //
+                    // console.log("金额%s可拆分%d 拆分方案 最终结果",money,stroke,arr,sum);
+                    // console.log("有没有5000的",find);
+                }else{
+                    return false
+                }
+            },
 
             poll(){
                 setTimeout(()=>{
@@ -190,33 +251,54 @@ var app = function (){
                 this.$refs.dialogForm.validate((valid) => {
                     if (valid) {
                         this.dialog.btnLoading = true;
-                        request.post('api.php?a=create',this.dialog.form)
-                            .then( res =>{
-                                this.dialog.btnLoading = false
+                        let money = this.dialog.form.money,
+                            split = (this.orderSplits(this.dialog.form.money) || [money]).map( value =>{
+                            return this.createOrder(
+                                Object.assign(JSON.parse(JSON.stringify(this.dialog.form)),{
+                                    money : value
+                                })
+                            );
+                        });
 
+                        let ignore = split.length > 1;
+
+                        axios.all(split)
+                            .then(axios.spread((res) => {
                                 let {data} = res;
-
-                                if(parseInt(data.data.status) === -1){
-                                    this.$confirm('今天已经给 '+this.dialog.form.name+' 转过 '+this.dialog.form.money+'元，请确认是否继续?', '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '关闭',
-                                        type: 'warning'
-                                    }).then(() => {
-
-                                    });
+                                if(!ignore){
+                                    if(parseInt(data.data.status) === -1){
+                                        this.$confirm('今天已经给 '+this.dialog.form.name+' 转过 '+this.dialog.form.money+'元，请确认是否继续?', '提示', {
+                                            confirmButtonText: '确定',
+                                            cancelButtonText: '关闭',
+                                            type: 'warning'
+                                        })
+                                    }
                                 }
 
-                                this.netTableData()
+                                this.moneySplitTip = false;
+                                this.dialog.btnLoading = false;
+                                this.netTableData();
                                 this.closeDialog();
-
-                            })
-                            .catch(err =>{
+                            }))
+                            .catch((err)=>{
+                                this.moneySplitTip = false;
                                 this.dialog.btnLoading = false;
                                 this.$message.error(err);
-                            })
+                            });
                     }
                 })
 
+            },
+
+            /**
+             * 创建订单
+             * @param data
+             * @returns {*|void}
+             */
+            createOrder(data){
+                return request.post('api.php?a=create',Object.assign(data,{
+                    scatter : data.money !== this.dialog.form.money
+                }))
             },
 
             /**

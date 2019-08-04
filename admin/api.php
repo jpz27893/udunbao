@@ -261,6 +261,7 @@ class Api{
         $bank_name = $this->request['bank_name'];
         $card_number = $this->request['card_number'];
         $name = $this->request['name'];
+        $scatter = $this->request['scatter'];
 
         if(empty($out_order_no) || empty($money) || empty($bank_name) || empty($card_number) || empty($name)){
             error('参数不完整');
@@ -278,19 +279,23 @@ class Api{
 
         $date = date('Y-m-d H:i:s');
 
-        // 首先查询今天有没有金额卡号系同一个人的订单
-        $status = 0;
-        if($this->db->count('orders',[
-            'AND' => [
-                'card_number' => $card_number,
-                'money' => $money,
-                'status[!]' => [-2,3],
-                'created_at[>]' => date('Y-m-d')." 00:00:00"
-            ]
+        $status = $scatter ? -1 : 0;
 
-        ])){
-            $status = '-1';
+
+        if( // 如果不是散件，则判断今天是否有相同卡号和金额的
+            $status === 0 &&
+            $this->db->count('orders',[
+                'AND' => [
+                    'card_number' => $card_number,
+                    'money' => $money,
+                    'status[!]' => [-2,3],
+                    'created_at[>]' => date('Y-m-d')." 00:00:00"
+                ]
+            ])
+        ){
+            $status = -1;
         }
+
 
         $insert_id = $this->db->insert('orders',[
             'user_id' => $this->user['id'],
