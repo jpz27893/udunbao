@@ -40,19 +40,24 @@ var app = function (){
                 }]
             }
         },
-        created(){
+        created() {
             this.init();
         },
         methods:{
             init(){
                 this.netTableData(true);
+                this.poll();
+            },
+            poll(){
+                setTimeout(()=>{
+                    this.netTableData(false,this.poll);
+                },1000)
             },
             //搜索
             onSearch(){
                 this.query.page = 1;
                 this.netTableData(true);
             },
-
             //获取表格数据
             netTableData(loading ,cb){
                 this.tableLoading = loading;
