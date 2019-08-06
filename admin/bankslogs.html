@@ -72,8 +72,38 @@
                         label="交易时间">
                 </el-table-column>
                 <el-table-column
+                        prop="margin"
+                        label="交易差额">
+                    <template slot-scope="scope">
+                        <span style="color: red" v-if="scope.row.margin > 0">
+                            {{scope.row.margin | moneyFormat}}
+                        </span>
+                        <span style="color: green" v-else>
+                            {{scope.row.margin | moneyFormat}}
+                        </span>
+
+                    </template>
+                </el-table-column>
+                <el-table-column
                         prop="balance"
                         label="账户余额">
+                    <template slot-scope="scope">
+                        <span style="color: red">
+                            {{scope.row.balance | moneyFormat}}
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="margin"
+                        label="摘要">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.margin > 0">
+                            充值
+                        </span>
+                        <span v-else>
+                            出款
+                        </span>
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="block" style="margin-top: 20px; text-align: right">

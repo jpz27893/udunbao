@@ -1,4 +1,4 @@
-/*
+
 var app = function (){
     new Vue({
         el: '#app',
@@ -13,7 +13,6 @@ var app = function (){
                 total : 0
             },
             tableLoading : false,
-            cardPollLoading: false,
             pickerOptions: {
                 shortcuts: [{
                     text: '最近一周',
@@ -93,17 +92,11 @@ var app = function (){
             netTableData(loading ,cb){
                 this.tableLoading = loading;
 
-                request.get('api.php?a=getBanks',{
+                request.get('api.php?a=adminList',{
                     params: this.query
                 })
                     .then(res => {
                         let {data} = res;
-                        if(! data.success){
-                            if(data.errMsg.indexOf('Unauthorized') !== -1){
-                                return location.href = 'login.html';
-                            }
-                            this.$message.error(data.errMsg);
-                        }
                         this.tableLoading = false;
                         this.tableData = data.data;
                         cb && cb();
@@ -123,79 +116,10 @@ var app = function (){
                 this.query.page = 1;
                 this.query.count = val;
                 this.netTableData(true);
-            },
-            //设置主卡
-            onBankMain(row){
-                this.tableLoading = true;
-                request.get('api.php?a=bankMain',{
-                    params: {
-                        id: row.id,
-                        main: row.main
-                    }
-                })
-                    .then(res => {
-                        this.netTableData(true);
-                    })
-                    .catch(err=>{
-                        this.$message.error(err);
-                    })
-            },
-            //打开卡池设置
-            onDialogSite(){
-                if(this.cardPollLoading === false){
-                    this.cardPollLoading = true;
-                    request.get('api.php?a=cardPool')
-                        .then( res =>{
-                            let {data} = res;
-                            if(data.data){
-                                let result = data.data;
-                                result.open = [data.open];
-                                result.sub_card_money = parseInt(result.sub_card_money);
-                                result.main_to_sub = parseInt(result.main_to_sub);
-                                result.main_card_money = parseInt(result.main_card_money);
-                                this.dialog.form = result;
-                            }
-
-                            this.dialog.visible = true;
-                            this.cardPollLoading = false;
-                        })
-                        .catch(err =>{
-                            this.cardPollLoading = false;
-                            this.$message.error(err);
-                        })
-                }
-            },
-            //发送卡池配置数据
-            dialogFormSubmit(){
-                this.$refs.dialogForm.validate((valid) => {
-                    if (valid) {
-                        this.dialog.btnLoading = true;
-                        let data = Object.assign({},this.dialog.form);
-                        data.open = this.dialog.form.open.find(function(element) {
-                            return element == 2;
-                        });
-                        data.open = data.open == 2?2:1;
-                        request.post('api.php?a=cardPoolSite',data)
-                            .then( res =>{
-                                let {data} = res;
-                                if(data.success){
-                                    this.$message.success(data.data);
-                                }else{
-                                    this.$message.error(data.errMsg);
-                                }
-                                this.dialog.visible = false;
-                                this.dialog.btnLoading = false;
-                            })
-                            .catch(err =>{
-                                this.dialog.btnLoading = false;
-                                this.$message.error(err);
-                            })
-                    }
-                })
             }
         }
     })
 };
 
 window.onload = app;
-*/
+

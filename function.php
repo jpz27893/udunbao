@@ -259,8 +259,10 @@ function createBanksLogs($cardNo , $balance){
     ]);
 
     if($bank['balance'] != $balance){
+        $margin =  $balance - $bank['balance'];
         $database->insert("banks_logs", [
             "card_no" => $cardNo,
+            "margin" => $margin,
             "balance" => $balance,
             "created_at" => $date,
             "updated_at" => $date

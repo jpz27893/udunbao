@@ -606,6 +606,47 @@ class Api{
     }
 
 
+    //管理员
+    /**
+     * 获取管理员列表
+     */
+    private function adminList(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+        $where['ORDER'] = [$orderBy => $sort];
+
+        $list = $this->db->select("admins",[
+           "id",
+           "username",
+           "nickname",
+           "now_login_at",
+           "now_login_ip",
+           "last_login_at",
+           "last_login_ip",
+           "created_at",
+           "updated_at"
+        ],array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        success([
+            'list'  => $list?:[],
+            'total' => $this->db->count('admins','*',$where)?:0,
+            'count' => count($list)
+        ]);
+    }
 }
 
 new Api($active , $_POST);
