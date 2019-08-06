@@ -39,7 +39,7 @@
                     <el-input v-model="query.money" placeholder="请输入金额" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="管理员" v-if="admin.id == 1">
-                    <el-select v-model="query.admin" placeholder="请选择管理员" clearable>
+                    <el-select v-model="query.adminid" placeholder="请选择管理员" clearable>
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="(item, index) in admins" :label="item.nickname" :value="item.id" :key="item.id"></el-option>
                     </el-select>
@@ -289,9 +289,14 @@
                         <el-input v-model="dialog.form.name" placeholder="请输入开户姓名"></el-input>
                     </el-form-item>
                     <el-form-item label="转账金额"  prop="money">
+                        <el-tooltip v-model="moneySplitTip" :manual="true" placement="top">
+                            <div slot="content" style="width:430px; "><div style="font-size: 16px">拆分提示</div>
+                                <div style="color: #e6a23c;font-size: 14px; ">当前金额>=5000，订单自动拆分金额为：{{moneySplitArr && moneySplitArr}}</div>
+                            </div>
                         <el-input v-model="dialog.form.money" placeholder="请输入订单金额">
                             <template slot="append" >元</template>
                         </el-input>
+                        </el-tooltip>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialog.visible = false">取 消</el-button>
