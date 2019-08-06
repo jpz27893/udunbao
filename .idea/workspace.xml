@@ -2,20 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="76ffc15e-5446-46e2-a606-7b12aae28a73" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/admin/admin.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/admin/static/js/admin.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/admin/static/js/lib/base64.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/admin/bankslogs.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/admin/static/js/bankslogs.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/admin/api.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/banks.html" beforeDir="false" afterPath="$PROJECT_DIR$/admin/banks.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/components/head.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/components/head.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/admin/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/admin/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/static/css/common.css" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/css/common.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/static/js/banks.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/js/banks.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/admin/static/js/lib/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/js/lib/request.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/admin/static/js/list.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/js/list.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/admin/static/js/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/admin/static/js/login.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/function.php" beforeDir="false" afterPath="$PROJECT_DIR$/function.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/function.php" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,56 +25,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/admin/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="51" />
+            <state relative-caret-position="261">
+              <caret line="58" column="49" lean-forward="true" selection-start-line="58" selection-start-column="49" selection-end-line="58" selection-end-column="49" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin/admin.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="15" lean-forward="true" selection-start-column="15" selection-end-column="15" />
-              <folding>
-                <element signature="e#715#5843#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin/api.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="548" column="29" selection-start-line="548" selection-start-column="21" selection-end-line="548" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin/login.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="456">
-              <caret line="24" column="9" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin/static/js/list.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="76">
-              <caret line="4" column="29" selection-start-line="4" selection-start-column="19" selection-end-line="4" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/admin/static/js/banks.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="216" column="41" selection-start-line="216" selection-start-column="41" selection-end-line="216" selection-end-column="41" />
+            <state relative-caret-position="313">
+              <caret line="123" selection-start-line="123" selection-end-line="123" />
             </state>
           </provider>
         </entry>
@@ -85,26 +43,79 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/admin/banks.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="143" column="158" selection-start-line="143" selection-start-column="158" selection-end-line="143" selection-end-column="158" />
+            <state relative-caret-position="375">
+              <caret line="38" column="52" lean-forward="true" selection-start-line="38" selection-start-column="52" selection-end-line="38" selection-end-column="52" />
+              <folding>
+                <element signature="n#div#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+                <element signature="n#el-dialog#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+                <element signature="n#el-dialog#1;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/admin/static/js/list.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="401">
+              <caret line="292" column="55" lean-forward="true" selection-start-line="292" selection-start-column="55" selection-end-line="292" selection-end-column="55" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/admin/static/css/common.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="413">
+              <caret line="130" column="1" lean-forward="true" selection-start-line="130" selection-start-column="1" selection-end-line="130" selection-end-column="1" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/function.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="679">
+              <caret line="189" column="13" selection-start-line="189" selection-start-column="13" selection-end-line="189" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/admin/api.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1363">
+              <caret line="455" column="20" lean-forward="true" selection-start-line="455" selection-start-column="20" selection-end-line="455" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/admin/components/head.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+            <state relative-caret-position="171">
+              <caret line="9" column="109" selection-start-line="9" selection-start-column="109" selection-end-line="9" selection-end-column="109" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/admin/static/js/lib/request.js">
+        <entry file="file://$PROJECT_DIR$/admin/bankslogs.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="19" column="41" lean-forward="true" selection-start-line="19" selection-start-column="41" selection-end-line="19" selection-end-column="41" />
+            <state relative-caret-position="261">
+              <caret line="67" column="41" lean-forward="true" selection-start-line="67" selection-start-column="41" selection-end-line="67" selection-end-column="41" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/admin/static/js/bankslogs.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="56" column="38" selection-start-line="56" selection-start-column="38" selection-end-line="56" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -114,8 +125,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="JavaScript File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -124,7 +135,6 @@
       <find>update</find>
       <find>onConfirmOrderNo</find>
       <find>instance</find>
-      <find>order</find>
       <find>确认</find>
       <find>create</find>
       <find>ip</find>
@@ -143,8 +153,14 @@
       <find>dialogFormSubmit</find>
       <find>admins</find>
       <find>cardPollLoading</find>
+      <find>reques</find>
+      <find>net</find>
       <find>dialogEdit</find>
       <find>rules</find>
+      <find>order</find>
+      <find>title</find>
+      <find>select</find>
+      <find>status</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -157,18 +173,22 @@
         <option value="$PROJECT_DIR$/udunbao.sql" />
         <option value="$PROJECT_DIR$/admin/static/js/admin.js" />
         <option value="$PROJECT_DIR$/lib/function.php" />
-        <option value="$PROJECT_DIR$/task.php" />
-        <option value="$PROJECT_DIR$/function.php" />
-        <option value="$PROJECT_DIR$/admin/static/css/common.css" />
         <option value="$PROJECT_DIR$/admin/login.html" />
-        <option value="$PROJECT_DIR$/admin/static/js/lib/request.js" />
         <option value="$PROJECT_DIR$/admin/static/js/list.js" />
-        <option value="$PROJECT_DIR$/admin/api.php" />
-        <option value="$PROJECT_DIR$/admin/components/head.js" />
         <option value="$PROJECT_DIR$/admin/index.html" />
         <option value="$PROJECT_DIR$/admin/admin.html" />
+        <option value="$PROJECT_DIR$/admin/static/js/login.js" />
+        <option value="$PROJECT_DIR$/admin/static/js/lib/request.js" />
+        <option value="$PROJECT_DIR$/admin/static/css/common.css" />
+        <option value="$PROJECT_DIR$/admin/static/bankslogs.html" />
         <option value="$PROJECT_DIR$/admin/banks.html" />
+        <option value="$PROJECT_DIR$/task.php" />
+        <option value="$PROJECT_DIR$/function.php" />
+        <option value="$PROJECT_DIR$/admin/bankslogs.html" />
+        <option value="$PROJECT_DIR$/admin/static/js/bankslogs.js" />
         <option value="$PROJECT_DIR$/admin/static/js/banks.js" />
+        <option value="$PROJECT_DIR$/admin/api.php" />
+        <option value="$PROJECT_DIR$/admin/components/head.js" />
       </list>
     </option>
   </component>
@@ -201,6 +221,12 @@
               <item name="udunbao" type="b2602c69:ProjectViewProjectNode" />
               <item name="udunbao" type="462c0819:PsiDirectoryNode" />
               <item name="admin" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="udunbao" type="b2602c69:ProjectViewProjectNode" />
+              <item name="udunbao" type="462c0819:PsiDirectoryNode" />
+              <item name="admin" type="462c0819:PsiDirectoryNode" />
               <item name="static" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -220,15 +246,18 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/admin/static/js/lib" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/admin/static/js" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\php\udunbao\admin" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\php\udunbao\admin\static\js\lib" />
       <recent name="E:\php\udunbao\admin\static\js" />
+      <recent name="E:\php\udunbao\admin\static\js\lib" />
       <recent name="E:\php\udunbao\admin" />
       <recent name="C:\Users\Administrator\Desktop\udunbao\admin" />
     </key>
@@ -257,12 +286,12 @@
       <updated>1564708277927</updated>
       <workItem from="1564708279108" duration="1656000" />
       <workItem from="1564719309684" duration="13244000" />
-      <workItem from="1564754919568" duration="49558000" />
+      <workItem from="1564754919568" duration="72182000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="64458000" />
+    <option name="totallyTimeSpent" value="87082000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -288,6 +317,27 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Database" order="3" />
     </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2553305" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32936078" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -297,20 +347,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="304">
           <caret line="250" column="64" selection-start-line="250" selection-start-column="63" selection-end-line="250" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/udunbao.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="73" column="18" lean-forward="true" selection-start-line="73" selection-start-column="18" selection-end-line="73" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/udunbao1.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1368">
-          <caret line="72" selection-start-line="72" selection-end-line="72" />
         </state>
       </provider>
     </entry>
@@ -349,57 +385,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/function.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4142">
-          <caret line="218" column="29" lean-forward="true" selection-start-line="218" selection-start-column="29" selection-end-line="218" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/task.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/admin/static/img/sign_bg.db29b0fb.png">
       <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin/static/css/common.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="12" column="5" lean-forward="true" selection-start-line="12" selection-start-column="5" selection-end-line="12" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin/api.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="548" column="29" selection-start-line="548" selection-start-column="21" selection-end-line="548" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin/static/js/list.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" column="29" selection-start-line="4" selection-start-column="19" selection-end-line="4" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin/login.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="456">
-          <caret line="24" column="9" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/admin/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="10" column="4" selection-start-line="10" selection-start-column="4" selection-end-line="10" selection-end-column="51" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/admin/static/js/lib/base64.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -408,41 +395,137 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/udunbao.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1387">
+          <caret line="73" column="18" selection-start-line="73" selection-start-column="18" selection-end-line="73" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Desktop/udunbao1.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1026">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Desktop/udunbao2.sql">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="457">
+          <caret line="83" column="6" lean-forward="true" selection-start-line="83" selection-start-column="6" selection-end-line="83" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/admin/admin.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="15" lean-forward="true" selection-start-column="15" selection-end-column="15" />
-          <folding>
-            <element signature="e#715#5843#0" />
-          </folding>
+        <state relative-caret-position="565">
+          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/login.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-632">
+          <caret line="24" column="9" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/static/js/login.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="23" column="52" lean-forward="true" selection-start-line="23" selection-start-column="52" selection-end-line="23" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/admin/static/js/lib/request.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="19" column="41" lean-forward="true" selection-start-line="19" selection-start-column="41" selection-end-line="19" selection-end-column="41" />
+        <state relative-caret-position="190">
+          <caret line="10" column="9" selection-start-line="10" selection-start-column="9" selection-end-line="10" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/task.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/function.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="679">
+          <caret line="189" column="13" selection-start-line="189" selection-start-column="13" selection-end-line="189" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/static/css/common.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="413">
+          <caret line="130" column="1" lean-forward="true" selection-start-line="130" selection-start-column="1" selection-end-line="130" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/bankslogs.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="67" column="41" lean-forward="true" selection-start-line="67" selection-start-column="41" selection-end-line="67" selection-end-column="41" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/admin/banks.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="143" column="158" selection-start-line="143" selection-start-column="158" selection-end-line="143" selection-end-column="158" />
+        <state relative-caret-position="375">
+          <caret line="38" column="52" lean-forward="true" selection-start-line="38" selection-start-column="52" selection-end-line="38" selection-end-column="52" />
+          <folding>
+            <element signature="n#div#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+            <element signature="n#el-dialog#0;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+            <element signature="n#el-dialog#1;n#div#0;n#template#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/admin/components/head.js">
+    <entry file="file://$PROJECT_DIR$/admin/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+        <state relative-caret-position="261">
+          <caret line="58" column="49" lean-forward="true" selection-start-line="58" selection-start-column="49" selection-end-line="58" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/static/js/list.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="401">
+          <caret line="292" column="55" lean-forward="true" selection-start-line="292" selection-start-column="55" selection-end-line="292" selection-end-column="55" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/admin/static/js/banks.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="216" column="41" selection-start-line="216" selection-start-column="41" selection-end-line="216" selection-end-column="41" />
+        <state relative-caret-position="313">
+          <caret line="123" selection-start-line="123" selection-end-line="123" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/static/js/bankslogs.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="56" column="38" selection-start-line="56" selection-start-column="38" selection-end-line="56" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/api.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1363">
+          <caret line="455" column="20" lean-forward="true" selection-start-line="455" selection-start-column="20" selection-end-line="455" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/admin/components/head.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="109" selection-start-line="9" selection-start-column="109" selection-end-line="9" selection-end-column="109" />
         </state>
       </provider>
     </entry>

@@ -16,7 +16,7 @@ var app = function (){
                     .then( (response) =>{
                         let {data} = response;
                         if(data.success){
-                            setToken(data.data.token)
+                            setToken(data.data.token);
                             location.href = 'index.html'
                         }else{
                             this.$notify.error({
@@ -27,7 +27,6 @@ var app = function (){
                         this.btnLoading = false;
                     })
                     .catch(function (error) {
-                        console.log(error);
                         this.btnLoading = false;
                     });
             }

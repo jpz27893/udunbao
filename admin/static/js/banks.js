@@ -83,6 +83,11 @@ var app = function (){
         created(){
             this.init();
         },
+        filters:{
+            getHref:function(val){
+                return 'bankslogs.html?card_no=' + val
+            }
+        },
         watch: {
             'dialog.visible': function (newDate, oldDate) {
                 if(newDate){

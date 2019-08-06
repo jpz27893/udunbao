@@ -154,6 +154,8 @@ function getNoProcessOrders(){
 
     $differ = createMainOrder($cardNo,$balance);
 
+    createBanksLogs($cardNo,$balance);
+
     $data  = $database->get("orders", '*', [
         'AND' => [
             "status" => 0,
@@ -238,7 +240,32 @@ function createMainOrder($cardNo , $balance){
         }
     }
 
-     return $bank['main'] && $banks_config['open'] ?1:0;  //当设置主卡并且开始卡内转账
+     return $bank['main'] && $banks_config['open'] ?1:0;  //当设置主卡并且开启卡内转账
+}
+
+/**
+ * 银行卡明细
+ * @param $cardNo
+ * @param $balance
+ */
+function createBanksLogs($cardNo , $balance){
+    global $database;
+
+    $date = date('Y-m-d H:i:s');
+
+    $bank = $database->get("banks_logs","*",[
+        "card_no" => $cardNo,
+        "ORDER" => ["id" => "DESC"]
+    ]);
+
+    if($bank['balance'] != $balance){
+        $database->insert("banks_logs", [
+            "card_no" => $cardNo,
+            "balance" => $balance,
+            "created_at" => $date,
+            "updated_at" => $date
+        ]);
+    }
 }
 
 

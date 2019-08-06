@@ -188,7 +188,6 @@ class Api{
         if($status !==''){
             $where['AND'][$orders.'status'] = $status;
         }
-
         if($money !==''){
             $where['AND'][$orders.'money'] = $money;
         }
@@ -432,7 +431,9 @@ class Api{
         }
 
         if($range !== ''){
-            $range = explode(',',$range);
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
             $where['AND']['created_at[>=]'] = $range[0];
             $where['AND']['created_at[<=]'] = $range[1];
         }
@@ -445,6 +446,42 @@ class Api{
         ]);
     }
 
+    /**
+     * 获取银行卡明细
+     */
+    private function banksLogs(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+
+        $where = [];
+        $card_no = $this->request['card_no'];
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($card_no !==''){
+            $where['AND']['card_no'] = $card_no;
+        }
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+        $where['ORDER'] = [$orderBy => $sort];
+        $list = $this->db->select('banks_logs' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+        success([
+            'list'  => $list?:[],
+            'total' => $this->db->count('banks_logs','*',$where)?:0,
+            'count' => count($list)
+        ]);
+
+    }
     /**
      * 设置主卡
      */

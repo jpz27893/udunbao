@@ -9,7 +9,6 @@ request.interceptors.response.use(function (response) {
         if(response.data.errMsg.indexOf('Unauthorized') !== -1){
             return location.href = 'login.html';
         }
-        this.$message.error(response.data.errMsg);
     }
     return response;
 }, function (error) {

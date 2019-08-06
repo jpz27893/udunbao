@@ -129,7 +129,9 @@ ul,ol,li{
     height: 45px;
     margin-bottom: 18px;
 }
-
+.index .title .el-breadcrumb{
+    font-size: 20px;
+}
 .upload-csv{
     display: inline-block;
     margin-left: 10px;
