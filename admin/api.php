@@ -417,6 +417,63 @@ class Api{
         }
     }
 
+    //卡池订单
+    /**
+     * 获取卡池订单
+     */
+    private function banksOrder(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+        $where = ['AND'=>['status[!]'=>-2]];
+        $order_id = $this->request['order_id']?:'';
+        $out_order_no = $this->request['out_order_no']?:'';
+        $card_number = $this->request['card_number']?:'';
+        $name = $this->request['name']?:'';
+        $range = $this->request['range']?:'';
+        $status = isset($this->request['status'])? (int) $this->request['status'] :'';
+        $money = isset($this->request['money'])? floatval($this->request['money']) :'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($order_id !== ''){
+            $where['AND']['order_id'] = $order_id;
+        }
+        if($out_order_no !== ''){
+            $where['AND']['out_order_no'] = $out_order_no;
+        }
+        if($card_number !== ''){
+            $where['AND']['card_number'] = $card_number;
+        }
+        if($name !== ''){
+            $where['AND']['name'] = $name;
+        }
+        if($status !== ''){
+            $where['AND']['status'] = $status;
+        }
+        if($money !== ''){
+            $where['AND']['money'] = $money;
+        }
+        if($range !== ''){
+            $range = explode(',',$range);
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+
+        $where['AND']['differ'] = 1;
+        $where['ORDER'] = [$orderBy => $sort];
+
+        $orders = $this->db->select('orders','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+        $total = $this->db->count('orders','*',$where);
+
+        success([
+            'list'  => $orders,
+            'total' => $total,
+            'count' => count($orders)
+        ]);
+    }
 
 
     //银行卡管理
