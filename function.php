@@ -210,15 +210,15 @@ function createMainOrder($cardNo , $balance){
 
     if($balance < $banks_config['sub_card_money'] && !$bank['main'] && !!$bank['name']){
 
-        $result = $database->select('orders','*',[
+        $result = $database->get('orders','*',[
             "AND" => [
                 'out_order_no' => $cardNo,
-                'card_number' => $cardNo
+                'card_number' => $cardNo,
+                'differ' => 1
             ],
             "ORDER" => [
                 "id" => "DESC"
-            ],
-            "LIMIT" => [0, 1]
+            ]
         ]);
 
         if(in_array($result['status'],[2,3]) || !$result){
