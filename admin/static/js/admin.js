@@ -44,39 +44,32 @@ var app = function (){
             dialog : {
                 visible: false,
                 btnLoading: false,
-                btnDisabled: true,
                 form : {
-                    open:[],
-                    sub_card_money: 0,
-                    main_to_sub: 0,
-                    main_card_money: 0
+                    id:0,
+                    username:'',
+                    nickname:'',
+                    password:'',
+                    password1:''
                 },
                 rules : {
-                    sub_card_money : [
-                        { pattern:  /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
-                    ],
-                    main_to_sub : [
-                        { pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
-                    ],
-                    main_card_money : [
-                        { pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
-                    ],
+                }
+            },
+            dialogEdit : {
+                visible: false,
+                btnLoading: false,
+                form : {
+                    id:0,
+                    username:'',
+                    password:'',
+                    password1:''
+                },
+                rules : {
+
                 }
             },
         },
         created(){
             this.init();
-        },
-        watch: {
-            'dialog.visible': function (newDate, oldDate) {
-                if(newDate){
-                    this.dialog.btnDisabled = false;
-                }else{
-                    this.dialog.btnDisabled = true;
-                    this.$refs.dialogForm && this.$refs.dialogForm.resetFields();
-                    this.$refs.dialogForm && this.$refs.dialogForm.clearValidate();
-                }
-            }
         },
         methods:{
             init(){
@@ -98,6 +91,11 @@ var app = function (){
                     .then(res => {
                         let {data} = res;
                         this.tableLoading = false;
+                        data.data.list.map((value,index) =>{
+                            value.delPopover = false;
+                            value.loading = false;
+                            return value;
+                        });
                         this.tableData = data.data;
                         cb && cb();
                     })
@@ -116,6 +114,25 @@ var app = function (){
                 this.query.page = 1;
                 this.query.count = val;
                 this.netTableData(true);
+            },
+            onDelAdmin(scope){
+                scope.row.loading = true;
+                scope.row.delPopover = false;
+                request.post('api.php?a=delAdmin',{
+                    id:scope.row.id
+                })
+                    .then(res => {
+                        this.$message.success(res.data.data);
+                        this.netTableData(true);
+                    })
+                    .catch(err=>{
+                        scope.row.loading = false;
+                    })
+            },
+            onUpdateAdmin(scope){
+                this.dialogEdit.visible = true;
+                this.dialogEdit.form.id = scope.row.id;
+                this.dialogEdit.form.username = scope.row.username;
             }
         }
     })

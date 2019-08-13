@@ -7,8 +7,8 @@
             '        <el-menu-item index="1"><el-link href="index.html">订单管理</el-link></el-menu-item>\n' +
             '        <el-menu-item index="2"><el-link href="banksorder.html">卡池订单</el-link></el-menu-item>\n' +
             '        <el-menu-item index="3"><el-link href="banks.html">银行卡管理</el-link></el-menu-item>\n' +
-            /*'        <el-menu-item index="3">财务报表</el-menu-item>\n' +
-            '        <el-menu-item index="4"><el-link href="admin.html">管理员管理</el-link></el-menu-item>\n' +*/
+            /*'        <el-menu-item index="3">财务报表</el-menu-item>\n' +*/
+            '        <el-menu-item index="4"><el-link href="admin.html">管理员管理</el-link></el-menu-item>\n' +
             '    </el-menu>',
         props:{
             activeIndex : {
