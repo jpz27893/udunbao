@@ -4,6 +4,7 @@ error_reporting(0);
 define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/');
 
 include ROOT."./lib/medoo.php";
+include ROOT."./lib/jwt.php";
 $config = require(ROOT.'./config.php');
 
 // 初始化配置
@@ -294,6 +295,155 @@ function callback($id , $status , $msg){
 
     return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3],['id' => $id]);
 }
+
+/**
+ * u盾登录
+ * @param $username
+ * @param $password
+ */
+function login($username,$password){
+    global $database;
+
+    if(empty($username) || empty($password)){
+        error('账号或密码不能为空');
+    }
+
+    $res = $database->get('admins','*',[
+        'username' => $username
+    ]);
+
+
+    if( ! password_verify($password , $res['password'])){
+        error('账号或密码错误');
+    }
+
+    $salt = generateRandomString(6);
+    // 登录成功后储存
+    $database->update('admins',[
+        'salt' => $salt,
+        'last_login_at' => $res['now_login_at'],
+        'last_login_ip' => $res['now_login_ip'],
+        'now_login_at' => date('Y-m-d H:i:s'),
+        'now_login_ip' => get_client_ip(),
+        'updated_at' => date('Y-m-d H:i:s')
+    ],['id'=>$res['id']]);
+    $array = array('id'=>$res['id'],'iss'=>$username,'iat'=>time(),'exp'=>time()+7200,'nbf'=>time(),'salt'=>$salt,'sub'=>'www.admin.com','jti'=>md5(uniqid('JWT').time()));
+    $token = Jwt::getToken($array);
+    success([
+        'token' => $token
+    ]);
+}
+
+
+/**
+ * 获取银行账号
+ * @param $identityNo
+ * @return bool|mixed
+ */
+function getBank($identityNo){
+    global $database;
+
+    $where = ['identity_no' => $identityNo];
+
+    $bank = $database->get('banks','*',$where);
+    if(! $bank){
+        error('银行账号不存在');
+    }
+
+    $bank = [
+        'Id' => $bank['id'],
+        'IdentityNo' => $bank['identity_no'],
+        'Name' => $bank['name'],
+        'IDCard' => $bank['id_card'],
+        'BankType' => $bank['bank_type'],
+        'Phone' => $bank['phone'],
+        'Account' => $bank['account'],
+        'CardNo' => $bank['card_no'],
+        'Password' => $bank['password'],
+        'WithdrawPassword' => $bank['withdraw_password'],
+        'UKeyPassword' => $bank['u_key_password'],
+        'Payed' => $bank['payed'],
+        'Balance' => $bank['balance'],
+        'State' => $bank['state'],
+        'Remark' => $bank['remark'],
+
+    ];
+
+    $scope = arr_to_str($bank);
+
+    $private_key = '-----BEGIN RSA PRIVATE KEY-----
+MIIEpQIBAAKCAQEA5rYXw8YVS7RqiJIZiyEvyxy/D8+79vqeVrcPp3zvfhfuUxqx
+QUbNTRxa0qm1SnbOAE3j46LI97qYw7tMcl4BJY+QccqxgA1o3oJ0g709N9TM4/ZU
+BSqiT53Fo05pJpNYXRn+qHlv4eJrC9aoYucTno08v6P1iPtS2ce49TEU3KdjfkxT
+6yGv2cSRgXrN9uOdQ6wuPtfafyqzLHmtfNBSJxmAhXIvL/XlfFk9rwBWTXdofCCI
++ZR0gApEysX3v1O3WVkOMRhvKA4dCe9Is5wI8XT3zBu4hoVzp7jRFONS8hUdfD4J
+PRC4OIBQqz77lpLNizVa7sm6YBNXTCNLvCZ/RwIDAQABAoIBAEAUlbc33pRfcTOr
+uNKPDjJRMrRWk7O+2pnlUMDJj8+rH/QPNuqVmtJvLL7Uilk7dG5bNA/3F/DO8D11
+WX9uoszm+kzQ6spRby5Wd7xbpJRMU/iBY8bnl5ubi9iXH9eqF2IMpVHwIOZRuD/a
+iHyoCCgCvLvR85HvlIyOz82yq0O55282XF/whU4P+61z5c4y8Nq0XRWC6MLB2WkT
+UXydI3/k2kb2AyirmejfzllNfZUmrCh/pzl5uGxXhzR3sNFCTyJQM+dRmQoQtvGk
+CUFFNxGO4d3LRuzGY5svGSU5p6DaV58lsoidi9GlwoLkqtZ1reMowaN2rQbUsI2w
+eccKWmECgYEA+7a05sMW0gkRSKD4INhPsOF8K0+VtFmwY+jnHvfC3y1jc1IY3Wgc
+0a9TOMd8/ovgv9MtwgxccZ2WDswNYelEGOohWYCWz2OBq4Umxsxe2fm4MBMR3e/2
+8Pvb+5ThAgZHWl68dS9bGAhpdTvewltltwDf993YWXrnuOL0E6u6zrECgYEA6qPU
+oxYOejVgsVXc/Tl0+5AsKTevpP2ntGHlv8kY+s0nFBSPQHHWmA//ml71Ja5C8qVv
+YnRQjb9zRmhFGt1YHH3v/g1RtE4tuY/EZv7J+DUKmizg4/fCjfTULiNx9IQZXIrc
+QD57IQk1lXzN2m0xcWEpCH5PqwunBYi29Fcv23cCgYEA54LbDad/dLzcRbWvod3y
+JdiuMNOo+FDJmIrdEDGG7We8oZNvxSv93ano3D82qpQSqbvcyS4/VExBeOiaomQ+
+ur+U3tITYzm9SPlVeeD8mHVCwAy6ESulL24mnVUIQqlttSOPKCTfHtKV1Dq1noMb
+oV7PoBVN6LbPK9Cp9vGrBnECgYEAm0tJHZMoi8uuLlBkzZfsi960y6bWcj2LdEBi
+3dcL2FpVZd3hncZ6P/Q+uH3mhETcfFnv6VqQQfCXK98w9YHPojPb1eoczFf9vVWg
+qIYzSDpaxQW05kyBkJCcqdi9wBZ57pzc/wwbVBcTRtfuKoWgdqjWjo+CzPMOXQRK
+Cld2DisCgYEA62v4E2HH6JpjS0NfXSczNt83/Gtywd4TXjSAlnAs0d8ZZ25RjNA4
+vZeFZV4xWfyd3CUBasbECgJN+gUzFMCqHB4hFaPwMFcEszWEZXKuq12zG9iB8i3G
+0K/wy33+qtxTgfuDxKwfOyNlkSkCVPyhTXbtECKlv2vr/Dr3UDpDIuI=
+-----END RSA PRIVATE KEY-----';
+
+    $public_key = '-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5rYXw8YVS7RqiJIZiyEv
+yxy/D8+79vqeVrcPp3zvfhfuUxqxQUbNTRxa0qm1SnbOAE3j46LI97qYw7tMcl4B
+JY+QccqxgA1o3oJ0g709N9TM4/ZUBSqiT53Fo05pJpNYXRn+qHlv4eJrC9aoYucT
+no08v6P1iPtS2ce49TEU3KdjfkxT6yGv2cSRgXrN9uOdQ6wuPtfafyqzLHmtfNBS
+JxmAhXIvL/XlfFk9rwBWTXdofCCI+ZR0gApEysX3v1O3WVkOMRhvKA4dCe9Is5wI
+8XT3zBu4hoVzp7jRFONS8hUdfD4JPRC4OIBQqz77lpLNizVa7sm6YBNXTCNLvCZ/
+RwIDAQAB
+-----END PUBLIC KEY-----';
+
+    $pri_key =  openssl_pkey_get_private($private_key);//这个函数可用来判断私钥是否是可用的，可用返回资源id Resource id
+    $pub_key = openssl_pkey_get_public($public_key);//这个函数可用来判断公钥是否是可用的
+
+    $encrypted = '';
+    $decrypted = '';
+
+    openssl_private_encrypt($scope,$encrypted,$pri_key);//加密：私钥加密
+    $encrypted = base64_encode($encrypted);//加密后的内容通常含有特殊字符，需要编码转换下，在网络间通过url传输时要注意base64编码是否是url安全的
+
+    //openssl_public_decrypt(base64_decode($encrypted),$decrypted,$pub_key);//解密：私钥加密的内容通过公钥可用解密出来
+
+    return $encrypted;
+}
+
+
+/**
+ * 数组转变成字符串
+ * @param $array
+ * @return string
+ */
+function arr_to_str ($array){
+
+    $string = [];
+
+    if($array && is_array($array)){
+
+        foreach ($array as $key=> $value){
+            $string[] = $key.'='.$value;
+        }
+    }
+
+    return implode(',',$string);
+}
+
+
 
 /**
  * 数据签名

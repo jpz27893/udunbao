@@ -1,7 +1,7 @@
 <?php
 
 include "../function.php";
-include "../lib/jwt.php";
+//include "../lib/jwt.php";
 include "../lib/GoogleAuthenticator.php";
 
 $active = $_GET['a'];
@@ -58,6 +58,14 @@ class Api{
             $salt = $payload['salt'];
             $this->user = $payload;
 
+            $method = ['banksOrder','getBanks','banksLogs','bankMain','cardPoolSite','cardPool','editBank','adminList','delAdmin','updateAdmin','addAdmin'];   //权限的接口
+            $exclude = ['login'];   //排除的接口
+            if(!in_array($active,$exclude)){
+                if($this->user['id'] != 1 && in_array($active,$method)){
+                    error('无权限');
+                }
+            }
+
             if( !$this->db->count('admins',['and' =>['username'=>$username ,'salt' => $salt]])){
                 error('Unauthorized.');
             }
@@ -73,6 +81,7 @@ class Api{
      * @param $data
      */
     private function login(){
+
         $username = $this->request['username'];
         $password = $this->request['password'];
         $code     = $this->request['code'];
@@ -80,8 +89,6 @@ class Api{
         if(empty($username) || empty($password)){
             error('账号或密码不能为空');
         }
-
-
 
         $res = $this->db->get('admins','*',[
             'username' => $username
@@ -199,6 +206,8 @@ class Api{
             $where['AND'][$orders.'created_at[>=]'] = $range[0];
             $where['AND'][$orders.'created_at[<=]'] = $range[1];
         }
+
+        $where['AND'][$orders.'differ'] = 0;
 
         $where['ORDER'] = [$orderBy => $sort];
 
@@ -648,7 +657,7 @@ class Api{
     }
 
     /**
-     * 修改姓名
+     * 修改卡号姓名
      */
     private function editBank(){
         $id = $this->request['id'];
@@ -703,6 +712,86 @@ class Api{
             'total' => $this->db->count('admins','*',$where)?:0,
             'count' => count($list)
         ]);
+    }
+
+    /**
+     *  删除管理员
+     */
+    private function delAdmin(){
+        $id = $this->request['id'];
+
+        if($id == $this->user['id']){
+            error('删除失败');
+        }
+
+        $result = $this->db->delete('admins',[
+            'id' => $id
+        ]);
+
+        $result?success('删除成功'):error('删除失败');
+    }
+
+    /**
+     * 修改管理员密码
+     */
+    private function updateAdmin(){
+        $id = $this->request['id'];
+        $password = $this->request['password'];
+
+        if(empty($password)){
+            error('密码不能为空');
+        }
+
+        $result = $this->db->update('admins',[
+            'password' => $password
+        ],[
+            'id' => $id
+        ]);
+
+        $result?success('修改成功'):error('修改失败');
+    }
+
+    /**
+     * 添加管理员账号
+     */
+    private function addAdmin(){
+        $username = $this->request['username'];
+        $password = $this->request['password'];
+        $nickname = $this->request['nickname'];
+
+        $google_secret = 'kkk6666555500001111';
+        $created_at = date("Y-m-d H:i:s");
+
+        if(!preg_match('/^[0-9a-zA-Z]+$/',$username)){
+            error('账号只能输入英文和数字');
+        }
+
+        $repeat = $this->db->get('admins','*',[
+            'username' => $username
+        ]);
+
+        if($repeat){
+            error('该账号已注册');
+        }
+
+        if(empty($password)){
+            error('密码不能为空');
+        }
+        if(empty($nickname)){
+            error('昵称不能为空');
+        }
+
+        $password = password_hash($password, PASSWORD_DEFAULT);
+
+        $result = $this->db->insert('admins',[
+            'username' => $username,
+            'password' => $password,
+            'nickname' => $nickname,
+            'google_secret' => $google_secret,
+            'created_at' => $created_at
+        ]);
+
+        $result?success('添加成功'):error('添加失败');
     }
 }
 

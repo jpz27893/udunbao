@@ -41,6 +41,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSearch">查询</el-button>
+                    <el-button icon="el-icon-plus" @click="dialog.visible = true">添加</el-button>
                 </el-form-item>
             </el-form>
 
@@ -90,9 +91,27 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button
-                                size="mini"
-                                @click="onDialogView(scope.row)" >编辑</el-button>
+                        <el-button size="mini" @click="onUpdateAdmin(scope)">编辑</el-button>
+
+                        <el-popover
+                                placement="top"
+                                title="提示"
+                                width="200"
+                                trigger="click"
+                                v-model="scope.row.delPopover">
+                            <p>确定要删除{{scope.row.username}}吗？</p>
+                            <div style="text-align: right; margin: 0">
+                                <el-button size="mini" type="text" @click="scope.row.delPopover = false">取消</el-button>
+                                <el-button type="primary" size="mini" @click="onDelAdmin(scope)">确定</el-button>
+                            </div>
+                            <el-button
+                                    v-if="scope.row.id != 1"
+                                    slot="reference"
+                                    size="mini"
+                                    :loading="scope.row.loading"
+                                    type="danger">删除</el-button>
+
+                        </el-popover>
                     </template>
                 </el-table-column>
             </el-table>
@@ -108,33 +127,51 @@
             </div>
 
 
-            <!--<el-dialog
-                    title="卡池设置"
+            <el-dialog
+                    title="添加管理员"
                     :visible.sync="dialog.visible"
                     width="600px">
-
-                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" class="form-small">
-
-                    <el-form-item label="1." prop="open">
-                        <el-checkbox-group v-model="dialog.form.open">
-                            <el-checkbox label="2" name="open">开启卡内转账</el-checkbox>
-                        </el-checkbox-group>
+                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px">
+                    <el-form-item label="用户名" prop="username">
+                        <el-input v-model="dialog.form.username" maxlength="16" placeholder="请输入用户名"></el-input>
                     </el-form-item>
-                    <el-form-item label="2." prop="sub_card_money">
-                        副卡金额小于<el-input v-model="dialog.form.sub_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>主卡自动转入
+                    <el-form-item label="昵称" prop="nickname">
+                        <el-input v-model="dialog.form.nickname" maxlength="16" placeholder="请输入昵称"></el-input>
                     </el-form-item>
-                    <el-form-item label="3." prop="main_to_sub">
-                        每次转入<el-input v-model="dialog.form.main_to_sub" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>
+                    <el-form-item label="密码" prop="password">
+                        <el-input v-model="dialog.form.password" type="password" maxlength="16" placeholder="请输入密码"></el-input>
                     </el-form-item>
-                    <el-form-item label="4." prop="main_card_money">
-                        主卡金额小于<el-input v-model="dialog.form.main_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>报警
+                    <el-form-item label="确认密码" prop="password1">
+                        <el-input v-model="dialog.form.password1" type="password" maxlength="16" placeholder="请再次输入密码"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialog.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
+                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialog.btnLoading">确 定</el-button>
                     </el-form-item>
                 </el-form>
-            </el-dialog>-->
+            </el-dialog>
+
+            <el-dialog
+                    title="更新管理员密码"
+                    :visible.sync="dialogEdit.visible"
+                    width="600px">
+                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules" label-width="110px">
+                    <el-form-item label="用户名" prop="username">
+                        <span>{{dialogEdit.form.username}}</span>
+                    </el-form-item>
+                    <el-form-item label="密码" prop="password">
+                        <el-input v-model="dialogEdit.form.password" type="password" maxlength="16" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="password1">
+                        <el-input v-model="dialogEdit.form.password1" type="password" maxlength="16" placeholder="请再次输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button @click="dialogEdit.visible = false">取 消</el-button>
+                        <el-button type="primary" @click="dialogFormSubmit()" :loading="dialogEdit.btnLoading">确 定</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+
         </template>
     </div>
 </div>
