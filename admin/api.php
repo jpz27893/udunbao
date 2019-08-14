@@ -741,7 +741,7 @@ class Api{
         if(empty($password)){
             error('密码不能为空');
         }
-
+        $password = password_hash($password, PASSWORD_DEFAULT);
         $result = $this->db->update('admins',[
             'password' => $password
         ],[

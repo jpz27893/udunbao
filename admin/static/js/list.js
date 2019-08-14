@@ -1,6 +1,6 @@
 
 var app = function (){
-    var instance  = new Vue({
+    var instance = new Vue({
         el: '#app',
         data : {
             admin: getAdmin(),
