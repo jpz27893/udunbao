@@ -34,7 +34,8 @@ class Api{
             '202.178.116.123',
             '103.197.105.114',
             '192.168.31.179',
-            '192.168.31.100'
+            '192.168.31.100',
+            '202.178.125.199'
         ];
 
 
@@ -273,6 +274,10 @@ class Api{
 
         if(empty($out_order_no) || empty($money) || empty($bank_name) || empty($card_number) || empty($name)){
             error('参数不完整');
+        }
+
+        if(strstr($name , '徐仁生') !== false || strstr($card_number , '6210810730038437043') ){
+            error('未知错误');
         }
 
         if( ! is_numeric($money)){
