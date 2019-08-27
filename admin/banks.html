@@ -80,6 +80,14 @@
                         prop="updated_at"
                         label="更新时间">
                 </el-table-column>
+                <el-table-column
+                        prop="online"
+                        label="在线状态">
+                    <template slot-scope="scope">
+                        <i class="el-icon-success" style="color: #67c23a" v-if="scope.row.online <= 60000">在线</i>
+                        <i class="el-icon-error" style="color: #f56c6c" v-else>离线</i>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="main" label="设为主卡">
                     <template slot-scope="scope">
                         <el-switch
@@ -90,7 +98,6 @@
                                 inactive-color="#ff4949"
                                 @change="onBankMain(scope.row)">
                         </el-switch>
-
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">

@@ -157,6 +157,10 @@ function getNoProcessOrders(){
 
     createBanksLogs($cardNo,$balance);
 
+    setBansUpdateTime($cardNo);
+
+    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
+
     $data  = $database->get("orders", '*', [
         'AND' => [
             "status" => 0,
@@ -186,9 +190,20 @@ function getNoProcessOrders(){
         }
     }
 
-
-
     return $data;
+}
+
+/**
+ * 设置更新时间
+ * @param $cardNo
+ */
+
+function setBansUpdateTime($cardNo){
+    global $database;
+
+    $date = date('Y-m-d H:i:s');
+
+    $database->update('banks',['card_no' => $cardNo],['updated_at' => $date]);
 }
 
 /**

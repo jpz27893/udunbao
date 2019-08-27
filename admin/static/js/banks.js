@@ -110,7 +110,10 @@ var app = function (){
         },
         methods:{
             init(){
-                this.netTableData(true);
+                this.netTableData(false);
+                setTimeout( () => {
+                    this.init();
+                },5000)
             },
             //搜索
             onSearch(){
@@ -128,6 +131,9 @@ var app = function (){
                     .then(res => {
                         let {data} = res;
                         this.tableLoading = false;
+                        data.data.list.map((value) =>{
+                            Object.assign(value, {online:new Date().getTime() - new Date(value.updated_at).getTime()});
+                        });
                         this.tableData = data.data;
                         cb && cb();
                     })
