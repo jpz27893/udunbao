@@ -59,8 +59,12 @@
                         label="id">
                 </el-table-column>
                 <el-table-column
-                        prop="card_no"
-                        label="银行卡">
+                        label="基本信息">
+                    <template slot-scope="scope">
+                        <p>姓名：{{scope.row.name}}</p>
+                        <p style="font-size: 12px;">类别：{{scope.row.bank_type}}</p>
+                        <p style="font-size: 12px;">卡号：{{scope.row.card_no}}</p>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         width="100px"
@@ -68,19 +72,15 @@
                         label="余额">
                 </el-table-column>
                 <el-table-column
-                        width="100px"
-                        prop="name"
-                        label="姓名">
-                </el-table-column>
-                <el-table-column
                         prop="created_at"
-                        label="创建时间">
+                        label="时间">
+                    <template slot-scope="scope">
+                        <p style="font-size: 12px;">创建：{{scope.row.created_at}}</p>
+                        <p style="font-size: 12px;">更新：{{scope.row.updated_at}}</p>
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        prop="updated_at"
-                        label="更新时间">
-                </el-table-column>
-                <el-table-column
+                        width="80px"
                         prop="online"
                         label="在线状态">
                     <template slot-scope="scope">
@@ -88,7 +88,10 @@
                         <i class="el-icon-error" style="color: #f56c6c" v-else>离线</i>
                     </template>
                 </el-table-column>
-                <el-table-column prop="main" label="设为主卡">
+                <el-table-column
+                        width="80px"
+                        prop="main"
+                        label="设为主卡">
                     <template slot-scope="scope">
                         <el-switch
                                 v-model="scope.row.main"
@@ -154,13 +157,16 @@
                     title="银行卡编辑"
                     :visible.sync="dialogEdit.visible"
                     width="600px">
-                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules" label-width="110px" class="form-small" @submit.native.prevent>
+                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules" label-width="110px" @submit.native.prevent>
                     <el-form-item label="卡号" prop="card_no">
                         <!--<el-input v-model="dialogEdit.form.card_no" placeholder="0"></el-input>-->
                         <span>{{dialogEdit.form.card_no}}</span>
                     </el-form-item>
                     <el-form-item label="姓名" prop="name">
                         <el-input v-model="dialogEdit.form.name" maxlength="8" placeholder="请输入姓名"></el-input>
+                    </el-form-item>
+                    <el-form-item label="类别" prop="bank_type">
+                        <el-input v-model="dialogEdit.form.bank_type" maxlength="30" placeholder="请输入银行卡类别"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialogEdit.visible = false">取 消</el-button>

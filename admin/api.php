@@ -1,5 +1,9 @@
 <?php
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');
+
 include "../function.php";
 //include "../lib/jwt.php";
 include "../lib/GoogleAuthenticator.php";
@@ -36,6 +40,7 @@ class Api{
             '192.168.31.179',
             '192.168.31.100',
             '192.168.31.36',
+            '192.168.31.36:8888',
             '202.178.125.199',
             '103.114.90.82',
             '103.114.89.13'
@@ -79,6 +84,7 @@ class Api{
                 'addAdmin',
                 'getIncomes',
                 'setIncomeStatus',
+                'getBanksMoney'
             ];
             $exclude = ['login'];   //排除的接口
             if(!in_array($active,$exclude)){
@@ -1020,13 +1026,34 @@ class Api{
     private function editBank(){
         $id = $this->request['id'];
         $name = $this->request['name'];
+        $bank_type = $this->request['bank_type'];
+
+        $regName = '/^[A-Za-z\x{4e00}-\x{9fa5}]+$/u';
+        $regBankType = '/^[A-Za-z0-9\x{4e00}-\x{9fa5}]+$/u';
+
+        if(!preg_match($regName,$name)){
+            error('姓名错误');
+        }
+
+        if(!preg_match($regBankType,$bank_type)){
+            error('类别错误');
+        }
 
         $this->db->update('banks',[
-            'name'=>$name
+            'name'=>$name,
+            'bank_type'=>$bank_type
         ],[
             'id'=>$id
         ]);
         success('设置成功');
+    }
+
+    /**
+     * 获取卡池总额
+     */
+    private function getBanksMoney(){
+        $sumBanksMoney = $this->db->sum('banks','balance');
+        success($sumBanksMoney);
     }
 
 
