@@ -298,7 +298,19 @@ var app = function (){
             createOrder(data){
                 return request.post('api.php?a=create',Object.assign(data,{
                     scatter : data.money !== this.dialog.form.money
-                }))
+                })).then( res =>{
+                    let {data} = res;
+                    if(data.success){
+                        this.dialog.visible = false;
+                        this.$message.success('创建成功')
+                    }else{
+                        this.$message.error(data.errMsg);
+                    }
+
+                })
+                    .catch(err =>{
+                        this.$message.error(err);
+                    })
             },
 
             /**
@@ -406,10 +418,15 @@ var app = function (){
             },
             uploadSuccess(response, file, fileList){
                 this.uploadLoading = false;
-                if(response.data.length>0){
-                    this.query.page = 1;
-                    this.netTableData(true);
+                if(response.success){
+                    if(response.data.length>0){
+                        this.query.page = 1;
+                        this.netTableData(true);
+                    }
+                }else{
+                    this.$message.error(response.errMsg);
                 }
+
             },
             uploadError(err, file, fileList){
                 this.uploadLoading = false;

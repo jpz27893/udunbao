@@ -40,17 +40,18 @@ var app = function (){
                 }]
             },
 
-            dialog : {
-                visible: false,
-                table: []
-            }
         },
         created(){
             this.init();
         },
+        filters:{
+            getHref:function(val){
+                return 'bankslogs.html?card_no=' + val
+            }
+        },
         methods:{
             init(){
-                this.netTableData(true);
+                this.netTableData(false);
             },
             //搜索
             onSearch(){
@@ -61,16 +62,9 @@ var app = function (){
             //获取表格数据
             netTableData(loading ,cb){
                 this.tableLoading = loading;
-                let query = [];
-                Object.keys(this.query).forEach(key => {
-                    let value = this.query[key];
-                    if(value === null || typeof value === 'undefined' || value === ''){
-                        return ;
-                    }
-                    query.push(key+'='+value)
-                });
-                if(query.length) query.unshift('&');
-                request.get('api.php?a=banksOrder'+query.join('&'),this.query)
+                request.get('api.php?a=getIncomes',{
+                    params: this.query
+                })
                     .then(res => {
                         let {data} = res;
                         this.tableLoading = false;
@@ -96,14 +90,10 @@ var app = function (){
                 this.query.count = val;
                 this.netTableData(true);
             },
-            onDialogView(row){
-                this.dialog.visible = true;
-                this.dialog.table = row;
-            },
             onStatus(scope,val){
-                request.get('api.php?a=banksOrderStatus',{
+                request.get('api.php?a=setIncomeStatus',{
                     params: {
-                        order_id: scope.row.id,
+                        id: scope.row.id,
                         status: val
                     }
                 })

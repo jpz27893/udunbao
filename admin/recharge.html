@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <title>账户充值-出款管理后台</title>
+    <link rel="stylesheet" href="static/css/common.css">
+    <link rel="stylesheet" href="static/css/elementui.css">
+    <script src="static/js/lib/vue.js"></script>
+    <script src="static/js/lib/axios.min.js"></script>
+    <script src="static/js/lib/base64.js"></script>
+    <script src="static/js/lib/request.js"></script>
+    <script src="static/js/lib/elementui.js"></script>
+    <script src="static/js/lib/qs.js"></script>
+    <script src="components/head.js"></script>
+    <script src="static/js/recharge.js"></script>
+</head>
+<body>
+
+<div id="app">
+    <head-component active-index="2"></head-component>
+    <div class="index">
+        <template>
+            <h4 class="title">
+                账户充值
+                <el-link href="rechargelogs.html">查看明细</el-link>
+            </h4>
+            <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
+                <el-form-item label="银行卡账号">
+                    <el-input v-model="query.card_no" placeholder="请输入银行卡" clearable></el-input>
+                </el-form-item>
+
+                <el-form-item label="金额">
+                    <el-input v-model="query.money" placeholder="请输入充值金额" clearable></el-input>
+                </el-form-item>
+
+
+                <el-form-item label="充值状态">
+                    <el-select v-model="query.status" placeholder="充值状态" clearable>
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="审核中" value="0"></el-option>
+                        <el-option label="进行中" value="1"></el-option>
+                        <el-option label="成功" value="2"></el-option>
+                        <el-option label="失败" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="时间">
+                    <el-date-picker
+                            v-model="query.range"
+                            type="datetimerange"
+                            :picker-options="pickerOptions"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            align="right">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSearch">查询</el-button>
+                    <el-button type="primary" icon="el-icon-bank-card" @click="onRecharge">充值</el-button>
+                </el-form-item>
+            </el-form>
+
+            <el-table
+                    :data="tableData.list"
+                    v-loading="tableLoading"
+                    border
+                    size="small"
+                    style="width: 100%">
+                <el-table-column
+                        width="80px"
+                        prop="id"
+                        label="id">
+                </el-table-column>
+                <el-table-column
+                        width="100px"
+                        prop="money"
+                        label="充值金额">
+                </el-table-column>
+                <el-table-column
+                        prop="bank_name"
+                        label="银行名称">
+                </el-table-column>
+                <el-table-column
+                        prop="card_no"
+                        label="银行卡">
+                </el-table-column>
+                <el-table-column
+                        width="100px"
+                        prop="card_name"
+                        label="姓名">
+                </el-table-column>
+                <el-table-column
+                        prop="created_at"
+                        label="创建时间">
+                </el-table-column>
+                <el-table-column
+                        prop="updated_at"
+                        label="更新时间">
+                </el-table-column>
+                <el-table-column
+                        width="100px"
+                        prop="status"
+                        label="状态">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.status == 0">审核中</span>
+                        <span v-else-if="scope.row.status == 1">充值进行中</span>
+                        <span v-else-if="scope.row.status == 2" style="color: #67c23a">充值成功</span>
+                        <span v-else-if="scope.row.status == 3"v-else style="color: #f56c6c">充值失败</span>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="block" style="margin-top: 20px; text-align: right">
+                <el-pagination
+                        @size-change="handleSizeChange"
+                        :current-page.sync="query.page"
+                        @current-change="handleCurrentChange"
+                        :page-size="query.count"
+                        layout="sizes ,prev, pager, next"
+                        :total="tableData.total">
+                </el-pagination>
+            </div>
+
+
+            <el-dialog
+                    title="账户充值"
+                    :visible.sync="dialog.visible"
+                    width="600px">
+                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" @submit.native.prevent>
+                    <el-form-item label="充值金额" prop="money">
+                        <el-input v-model="dialog.form.money" maxlength="10" placeholder="请输入充值金额">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="银行名称" prop="card_no">
+                        <el-input v-model="dialog.form.bank_name" maxlength="19" placeholder="请输入充值的卡号的银行名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="卡号" prop="card_no">
+                        <el-input v-model="dialog.form.card_no" maxlength="19" placeholder="请输入充值的银行卡号"></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名" prop="bank_name">
+                        <el-input v-model="dialog.form.card_name" maxlength="16" placeholder="请输入姓名"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button @click="dialog.visible = false">取 消</el-button>
+                        <el-button type="primary" @click="onDialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </template>
+    </div>
+</div>
+
+</body>
+</html>

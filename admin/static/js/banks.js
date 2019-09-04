@@ -113,7 +113,7 @@ var app = function (){
                 this.netTableData(false);
                 setTimeout( () => {
                     this.init();
-                },5000)
+                },5000);
             },
             //搜索
             onSearch(){

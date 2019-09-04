@@ -35,7 +35,10 @@ class Api{
             '103.197.105.114',
             '192.168.31.179',
             '192.168.31.100',
-            '202.178.125.199'
+            '192.168.31.36',
+            '202.178.125.199',
+            '103.114.90.82',
+            '103.114.89.13'
         ];
 
 
@@ -51,15 +54,32 @@ class Api{
             }
 
             $payload = $jwt->verifyToken($_SERVER['HTTP_TOKEN']);
+
             if( ! $payload){
                 error('Unauthorized.');
             }
 
             $username = $payload['iss'];
             $salt = $payload['salt'];
+
             $this->user = $payload;
 
-            $method = ['banksOrder','getBanks','banksLogs','bankMain','cardPoolSite','cardPool','editBank','adminList','delAdmin','updateAdmin','addAdmin'];   //权限的接口
+            //权限的接口
+            $method = [
+                'banksOrder',
+                'getBanks',
+                'banksLogs',
+                'bankMain',
+                'cardPoolSite',
+                'cardPool',
+                'editBank',
+                'adminList',
+                'delAdmin',
+                'updateAdmin',
+                'addAdmin',
+                'getIncomes',
+                'setIncomeStatus',
+            ];
             $exclude = ['login'];   //排除的接口
             if(!in_array($active,$exclude)){
                 if($this->user['id'] != 1 && in_array($active,$method)){
@@ -67,7 +87,10 @@ class Api{
                 }
             }
 
-            if( !$this->db->count('admins',['and' =>['username'=>$username ,'salt' => $salt]])){
+            $result = $this->db->count('salts',['and' =>['user_id'=>$payload['id'] ,'salt' => $salt,'life_at[>]' => date('Y-m-d H:i:s')]]);
+
+            //if( !$this->db->count('admins',['and' =>['username'=>$username ,'salt' => $salt]])){
+            if( !$result ){
                 error('Unauthorized.');
             }
         }
@@ -117,6 +140,16 @@ class Api{
 
         $salt = generateRandomString(6);
         // 登录成功后储存
+        $date = date('Y-m-d H:i:s');
+        $this->db->insert('salts',[
+            'user_id' => $res['id'],
+            'salt' => $salt,
+            'ip' => get_client_ip(),
+            'life_at' => date("Y-m-d H:i:s", strtotime("1 hour")),
+            'created_at' => $date,
+            'updated_at' => $date
+        ]);
+
         $this->db->update('admins',[
             'salt' => $salt,
             'last_login_at' => $res['now_login_at'],
@@ -262,15 +295,36 @@ class Api{
     }
 
     /**
+     * 判断商户余额是否充足
+     * @param $money
+     */
+    private function regMoney($money){
+        if($this->user['id'] != 1){
+            //判断余额是否充足
+            $admin = $this->db->get('admins','*',['id'=>$this->user['id']]);
+            $order_money = $this->db->sum('orders','money',['and'=>[
+                'user_id'=>$this->user['id'],'status'=>[-1,0,1]
+            ]]);
+
+            if($admin['money'] < $order_money || $admin['money'] < $money + $order_money){
+                error('账户余额不足，请充值');
+            }
+        }
+    }
+
+    /**
      * 创建订单
      */
     private function create(){
         $out_order_no = $this->request['out_order_no'];
-        $money = $this->request['money'];
+        $money = floatval($this->request['money']);
         $bank_name = $this->request['bank_name'];
         $card_number = $this->request['card_number'];
         $name = $this->request['name'];
         $scatter = $this->request['scatter'];
+
+        $this->regMoney($money);
+
 
         if(empty($out_order_no) || empty($money) || empty($bank_name) || empty($card_number) || empty($name)){
             error('参数不完整');
@@ -286,8 +340,8 @@ class Api{
 
         $money = floatval($money);
 
-        if($money < 10){
-            error('金额不能小于10元');
+        if($money < 0.01){
+            error('金额不能小于0.01元');
         }
 
         $date = date('Y-m-d H:i:s');
@@ -345,6 +399,278 @@ class Api{
         success('取消成功');
 
     }
+    //*** 账号充值
+
+    /**
+     * 获取所有账户充值订单
+     */
+    private function incomes(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+        $card_no = $this->request['card_no']?:'';
+        $bank_name = $this->request['bank_name']?:'';
+        $status = isset($this->request['status'])?$this->request['status']:'';
+        $money = !empty($this->request['money'])? floatval($this->request['money']) :'';
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        $where['AND']['user_id'] = $this->user['id'];
+
+        if($card_no !==''){
+            $where['AND']['card_no'] = $card_no;
+        }
+        if($bank_name !==''){
+            $where['AND']['bank_name'] = $bank_name;
+        }
+        if($status !==''){
+            $where['AND']['status'] = $status;
+        }
+        if($money !==''){
+            $where['AND']['money'] = $money;
+        }
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+
+        $where['ORDER'] = [$orderBy => $sort];
+
+
+        $list = $this->db->select('income','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        $total = $this->db->count('income','*',$where);
+
+        success([
+            'list'  => $list,
+            'total' => $total,
+            'count' => count($list)
+        ]);
+
+    }
+
+
+    /**
+     * 创建充值订单
+     */
+    private function recharge(){
+        $money = floatval($this->request['money']);
+        $bank_name = $this->request['bank_name'];
+        $card_name = $this->request['card_name'];
+        $card_no = $this->request['card_no'];
+
+        $result = $this->db->insert('income',[
+            'user_id'=> $this->user['id'],
+            'money' => $money,
+            'card_name' => $card_name,
+            'card_no' => $card_no,
+            'bank_name' => $bank_name,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        $result?success('添加充值订单成功'):error('添加充值订单失败');
+    }
+
+    /**
+     * 获取当前用户充值金额
+     */
+    private function getUserMoney(){
+        $money = $this->db->get('admins',
+            ["money"],
+            ['id'=> $this->user['id']]
+        );
+
+        $freeze_money = $order_money = $this->db->sum('orders','money',['and'=>[
+            'user_id'=>$this->user['id'],'status'=>[-1,0,1]
+        ]]);
+
+        $array = array_merge($money,['freeze_money' => $freeze_money]);
+        success($array);
+    }
+
+    /**
+     * 获取账户明细
+     */
+    private function getIncomesLogs(){
+
+        $orderBy = 'id';
+        $sort = 'DESC';
+        $card_no = $this->request['card_no']?:'';
+        $bank_name = $this->request['bank_name']?:'';
+        $type = isset($this->request['type'])?$this->request['type']:'';
+        $money = !empty($this->request['money'])? floatval($this->request['money']) :'';
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($card_no !==''){
+            $where['AND']['card_no'] = $card_no;
+        }
+        if($bank_name !==''){
+            $where['AND']['bank_name'] = $bank_name;
+        }
+        if($type !==''){
+            $where['AND']['type'] = $type;
+        }
+        if($money !==''){
+            $where['AND']['money'] = $money;
+        }
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];
+        }
+
+        $where['ORDER'] = [$orderBy => $sort];
+
+        $list = $this->db->select('income_logs','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        $total = $this->db->count('income_logs','*',$where);
+
+        success([
+            'list'  => $list,
+            'total' => $total,
+            'count' => count($list)
+        ]);
+    }
+
+
+
+    /**
+     * 管理员获取充值订单
+     */
+    private function getIncomes(){
+        $orderBy = 'id';
+        $sort = 'DESC';
+        $username = $this->request['username']?:'';
+        $card_no = $this->request['card_no']?:'';
+        $bank_name = $this->request['bank_name']?:'';
+        $status = isset($this->request['status'])?$this->request['status']:'';
+        $money = !empty($this->request['money'])? floatval($this->request['money']) :'';
+        $range = $this->request['range']?:'';
+        $page = intval($this->request['page']) ?: 1;
+        $count = intval($this->request['count'])?:10;
+        $offset = ($page - 1) * $count;
+        $limit  = $count;
+
+        if($username !==''){
+            $where['AND']['admins.username'] = $username;
+        }
+        if($card_no !==''){
+            $where['AND']['income.card_no'] = $card_no;
+        }
+        if($bank_name !==''){
+            $where['AND']['income.bank_name'] = $bank_name;
+        }
+        if($status !==''){
+            $where['AND']['income.status'] = $status;
+        }
+        if($money !==''){
+            $where['AND']['income.money'] = $money;
+        }
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $where['AND']['income.created_at[>=]'] = $range[0];
+            $where['AND']['income.created_at[<=]'] = $range[1];
+        }
+
+        $where['ORDER'] = [$orderBy => $sort];
+
+
+        $list = $this->db->select('income',[
+            "[><]admins" => ['user_id'=>'id'],
+        ],[
+            "income.id",
+            "income.user_id",
+            "admins.username",
+            "income.money",
+            "income.card_no",
+            "income.bank_name",
+            "income.card_name",
+            "income.status",
+            "income.created_at",
+            "income.updated_at"
+        ],array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        $total = $this->db->count('income','*',$where);
+
+        success([
+            'list'  => $list,
+            'total' => $total,
+            'count' => count($list)
+        ]);
+    }
+
+
+    /**
+     * 管理员审核通过
+     */
+    private function setIncomeStatus(){
+        $id = $this->request['id']?:'';
+        $status = $this->request['status']?:'';
+        $recharge = 0;
+
+        if(!in_array($status,[2,3])){
+            error('设置失败!');
+        }
+
+        $result = $this->db->update('income',[
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+
+        ],[
+            "AND" => [
+                "id" => $id,
+                "status" => [0,1]
+            ]
+        ]);
+
+        if($result && $status == 2){    //设置为成功时，添加到余额
+            $income = $this->db->get('income','*',['id'=>$id]);
+
+            $admin = $this->db->get('admins','*',['id'=>$income['user_id']]);
+
+            $after_money = floatval($admin['money']) + floatval($income['money']);
+
+            $recharge = $this->db->update('admins',[
+                'money' => $after_money,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],['id'=>$income['user_id']]);
+
+            //充值成功，添加日志
+
+            if($recharge){
+                $this->db->insert('income_logs',[
+                    'user_id'=>$income['user_id'],
+                    'income_id'=>$income['id'],
+                    'type'=>1,
+                    'money'=>$income['money'],
+                    'before_money'=>$admin['money'],
+                    'after_money'=>$after_money,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+        }
+
+        $result&&$recharge?success('设置成功'):error('设置失败');
+    }
+
 
     /**
      * 上传csv
@@ -370,7 +696,9 @@ class Api{
             $data = $arrays;
             if($data){
                 $array = [];
+                $sum_money = [];
                 foreach ($data as $key=>$value){
+                    array_push($sum_money,floatval(trim(str_replace('"','',$value[3]))));
                     array_push($array,[
                         'user_id' => $this->user['id'],
                         'order_id' => makeOrderId(),
@@ -378,7 +706,7 @@ class Api{
                         'money' => trim(str_replace('"','',$value[3])),
                         'bank_name' => trim(str_replace('"','',$value[0])),
                         'card_number' => trim(str_replace('"','',$value[1])),
-                        'name' => trim(str_replace('"','',$value[2])),
+                        'name' => trim(str_replace('"','',characet($value[2]))),
                         'create_ip' => get_client_ip(),
                         'status' => -1,
                         'created_at' => date('Y-m-d H:i:s',strtotime(trim(str_replace('"','',$value[5])))),
@@ -386,6 +714,7 @@ class Api{
                     ]);
                 }
 
+                $this->regMoney(array_sum($sum_money)); //验证金额
                 $last_id = $this->db->insert('orders', $array);
 
                 if($last_id){
@@ -431,7 +760,7 @@ class Api{
         }
     }
 
-    //卡池订单
+    //***卡池订单
     /**
      * 获取卡池订单
      */
@@ -488,9 +817,33 @@ class Api{
             'count' => count($orders)
         ]);
     }
+    /**
+     * 设置卡池订单成功失败
+     */
+    private function banksOrderStatus(){
+        $order_id = $this->request['order_id']?:'';
+        $status = $this->request['status']?:'';
+
+        if(!in_array($status,[2,3])){
+            error('设置失败!');
+        }
+
+        $result = $this->db->update('orders',[
+            'differ' => 1,
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+
+        ],[
+            "AND" => [
+                "id" => $order_id,
+                "status" => [0,1]
+            ]
+        ]);
+        $result?success('设置成功'):error('设置失败');
+    }
 
 
-    //银行卡管理
+    //***银行卡管理
     /**
      * 获取银行卡
      */
@@ -676,7 +1029,8 @@ class Api{
         success('设置成功');
     }
 
-    //管理员
+
+    //***管理员
     /**
      * 获取管理员列表
      */
@@ -703,6 +1057,7 @@ class Api{
            "id",
            "username",
            "nickname",
+           "money",
            "now_login_at",
            "now_login_ip",
            "last_login_at",
@@ -722,7 +1077,7 @@ class Api{
      *  删除管理员
      */
     private function delAdmin(){
-        $id = $this->request['id'];
+        /*$id = $this->request['id'];
 
         if($id == $this->user['id']){
             error('删除失败');
@@ -732,7 +1087,7 @@ class Api{
             'id' => $id
         ]);
 
-        $result?success('删除成功'):error('删除失败');
+        $result?success('删除成功'):error('删除失败');*/
     }
 
     /**

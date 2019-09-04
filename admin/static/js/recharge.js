@@ -12,6 +12,7 @@ var app = function (){
                 total : 0
             },
             tableLoading : false,
+            cardPollLoading: false,
             pickerOptions: {
                 shortcuts: [{
                     text: '最近一周',
@@ -42,15 +43,48 @@ var app = function (){
 
             dialog : {
                 visible: false,
-                table: []
+                btnLoading: false,
+                btnDisabled: true,
+                form : {
+                    money: '',
+                    card_no: '',
+                    bank_name: ''
+                },
+                rules : {
+                    money : [
+                        { pattern:  /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: ['change','blur'] }
+                    ],
+                    card_no : [
+                        { pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: ['change','blur'] }
+                    ],
+                    bank_name : [
+                        { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/, message: '不能包含特殊字符', trigger: ['change','blur'] }
+                    ],
+                }
             }
         },
         created(){
             this.init();
         },
+        filters:{
+            getHref:function(val){
+                return 'bankslogs.html?card_no=' + val
+            }
+        },
+        watch: {
+            'dialog.visible': function (newDate, oldDate) {
+                if(newDate){
+                    this.dialog.btnDisabled = false;
+                }else{
+                    this.dialog.btnDisabled = true;
+                    this.$refs.dialogForm && this.$refs.dialogForm.resetFields();
+                    this.$refs.dialogForm && this.$refs.dialogForm.clearValidate();
+                }
+            }
+        },
         methods:{
             init(){
-                this.netTableData(true);
+                this.netTableData(false);
             },
             //搜索
             onSearch(){
@@ -61,22 +95,12 @@ var app = function (){
             //获取表格数据
             netTableData(loading ,cb){
                 this.tableLoading = loading;
-                let query = [];
-                Object.keys(this.query).forEach(key => {
-                    let value = this.query[key];
-                    if(value === null || typeof value === 'undefined' || value === ''){
-                        return ;
-                    }
-                    query.push(key+'='+value)
-                });
-                if(query.length) query.unshift('&');
-                request.get('api.php?a=banksOrder'+query.join('&'),this.query)
+                request.get('api.php?a=incomes',{
+                    params: this.query
+                })
                     .then(res => {
                         let {data} = res;
                         this.tableLoading = false;
-                        data.data.list.map((value) =>{
-                            Object.assign(value, {popover:false});
-                        });
                         this.tableData = data.data;
                         cb && cb();
                     })
@@ -96,31 +120,31 @@ var app = function (){
                 this.query.count = val;
                 this.netTableData(true);
             },
-            onDialogView(row){
+            onRecharge(){
                 this.dialog.visible = true;
-                this.dialog.table = row;
             },
-            onStatus(scope,val){
-                request.get('api.php?a=banksOrderStatus',{
-                    params: {
-                        order_id: scope.row.id,
-                        status: val
+            onDialogFormSubmit(){
+                this.$refs.dialogForm.validate((valid) => {
+                    if (valid) {
+                        this.dialog.btnLoading = true;
+                        request.post('api.php?a=recharge',this.dialog.form)
+                            .then( res =>{
+                                let {data} = res;
+                                if(data.success){
+                                    this.$message.success(data.data);
+                                }else{
+                                    this.$message.error(data.errMsg);
+                                }
+                                this.dialog.visible = false;
+                                this.dialog.btnLoading = false;
+                                this.netTableData(true);
+                            })
+                            .catch(err =>{
+                                this.dialog.btnLoading = false;
+                                this.$message.error(err);
+                            })
                     }
                 })
-                    .then(res => {
-                        let {data} = res;
-                        if(data.success){
-                            this.$message.success(data.data);
-                            this.tableData.list[scope.$index].popover = false;
-                            this.netTableData(true);
-                        }else{
-                            this.$message.error(data.errMsg);
-                        }
-                    })
-                    .catch(err=>{
-                        this.$message.error(err);
-                        this.tableLoading = false;
-                    })
             }
         }
     })

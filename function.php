@@ -153,13 +153,11 @@ function getNoProcessOrders(){
     $cardNo = $post['cardNo'];
     $balance = $post['balance'];
 
+    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
+
     $differ = createMainOrder($cardNo,$balance);
 
     createBanksLogs($cardNo,$balance);
-
-    setBansUpdateTime($cardNo);
-
-    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
 
     $data  = $database->get("orders", '*', [
         'AND' => [
@@ -190,20 +188,9 @@ function getNoProcessOrders(){
         }
     }
 
+
+
     return $data;
-}
-
-/**
- * 设置更新时间
- * @param $cardNo
- */
-
-function setBansUpdateTime($cardNo){
-    global $database;
-
-    $date = date('Y-m-d H:i:s');
-
-    $database->update('banks',['card_no' => $cardNo],['updated_at' => $date]);
 }
 
 /**
@@ -298,7 +285,7 @@ function callback($id , $status , $msg){
 
     $where = ['id' => $id];
 
-    $order = $database->get('orders','status',$where);
+    $order = $database->get('orders','*',$where);
 
     if(! $order){
         error('订单不存在');
@@ -308,7 +295,56 @@ function callback($id , $status , $msg){
         error('请求订单不是进行中的状态，不能回调');
     }
 
+    file_put_contents('callback.txt',date('Y-m-d H:i:s')."\t".get_client_ip()."\t".$id."\t".$status."\t".$msg.PHP_EOL,FILE_APPEND);
+
+    if($order['differ'] == 0 && $status == 1){  //成功才能为商户减款
+        if(!in_array($order['user_id'],[0,1]) ){
+            deduction($id,$status);
+        }
+    }
+
     return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3],['id' => $id]);
+}
+
+/**
+ * 商户充值减款
+ * @param $id
+ * @param $status
+ */
+function deduction($id , $status){
+    global $database;
+
+    $where = ['id' => $id];
+
+    $order = $database->get('orders','*',$where);
+
+    if(! $order){
+        error('订单不存在');
+    }
+
+    if($status == 1){
+
+        $admin = $database->get('admins','*',['id'=>$order['user_id']]);
+
+        $after_money = floatval($admin['money']) - floatval($order['money']);
+
+        $database->update('admins',[
+            'money' => $after_money,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ],['id'=>$order['user_id']]);
+
+        //减款成功，添加日志
+        $database->insert('income_logs',[
+            'user_id'=>$order['user_id'],
+            'order_id'=>$order['id'],
+            'type'=>2,
+            'money'=>-$order['money'],
+            'before_money'=>$admin['money'],
+            'after_money'=>$after_money,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+    }
 }
 
 /**
@@ -565,6 +601,21 @@ function importCsv($fileName, $line=0, $offset=0){
         $j++;
     }
     return $arr;
+}
+
+/**
+ * 识别转化中文
+ * @param $data
+ * @return string
+ */
+function characet($data){
+    if( !empty($data) ){
+        $fileType = mb_detect_encoding($data , array('UTF-8','GBK','LATIN1','BIG5')) ;
+        if( $fileType != 'UTF-8'){
+            $data = mb_convert_encoding($data ,'utf-8' , $fileType);
+        }
+    }
+    return $data;
 }
 
 /**
