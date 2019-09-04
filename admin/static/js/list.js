@@ -14,8 +14,6 @@ var app = function (){
                 total : 0
             },
             admins: [],
-            banks : [],
-            banksLoading : false,
             tableLoading : false,
             moneySplitTip : false,
             moneySplitArr : [],
@@ -188,22 +186,6 @@ var app = function (){
                         this.$message.error(err);
                     })
             },
-            netBanks(loading ,cb){
-                this.banksLoading = loading;
-                request.get('api.php?a=banks')
-                    .then(res => {
-                        let {data} = res;
-
-                        this.banksLoading = false;
-                        this.banks = data.data || [];
-                        cb && cb();
-                    })
-                    .catch(err=>{
-                        this.$message.error(err);
-                        this.banksLoading = false;
-                        cb && cb();
-                    })
-            },
 
             /**
              * 合计
@@ -373,7 +355,6 @@ var app = function (){
              */
             netTableData(loading ,cb){
                 this.tableLoading = loading;
-                this.banksLoading = loading;
                 let query = [];
                 Object.keys(this.query).forEach(key => {
                     let value = this.query[key];
@@ -387,7 +368,6 @@ var app = function (){
                     .then(res => {
                         let {data} = res;
 
-                        this.banksLoading = false;
                         this.tableLoading = false;
                         this.tableData = data.data;
                         cb && cb();

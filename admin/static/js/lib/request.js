@@ -4,6 +4,8 @@ let request = axios.create({
     }
 });
 
+request.defaults.baseURL = 'http://192.168.31.179:801/admin/';  // 默认地址
+
 request.interceptors.response.use(function (response) {
     if(! response.data.success){
         if(response.data.errMsg.indexOf('Unauthorized') !== -1){
@@ -25,4 +27,7 @@ function getAdmin() {
 
 function setToken(token){
     localStorage.setItem('token',token)
+}
+function clearToken() {
+    localStorage.removeItem('token')
 }

@@ -72,10 +72,14 @@ var app = function (){
                     card_no: 0,
                     name: ''
                 },
-                rules : {
-                    name : [
+                rules: {
+                    name: [
                         { required: true, message: '姓名不能为空', trigger: 'blur' },
                         { pattern:  /^[A-Za-z\u4e00-\u9fa5]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
+                    ],
+                    bank_type: [
+                        { required: true, message: '银行卡类别不能为空', trigger: 'blur' },
+                        { pattern:  /^[0-9A-Za-z\u4e00-\u9fa5]+$/, message: '不能包含字符串或其他特殊字符', trigger: 'change' }
                     ]
                 }
             }

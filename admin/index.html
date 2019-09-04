@@ -83,20 +83,6 @@
                 </el-form-item>
             </el-form>
 
-            <div style="margin-bottom: 15px;" v-if="admin.id == 1">
-                <el-alert
-
-                        type="success"
-                        :closable="false">
-                    <div slot="title" style="padding: 10px 0px">
-                        银行卡信息
-                    </div>
-                    <div class="bank-info" v-loading="banksLoading">
-                        <div class="t"><span class="ch">卡号</span><span class="ye">余额</span></div>
-                        <div class="b" v-for=" item in tableData.banks "><span class="ch">{{item.card_no}}</span><span class="ye">{{item.balance}}</span></div>
-                    </div>
-                </el-alert>
-            </div>
 
             <el-table
                     :data="tableData.list"
