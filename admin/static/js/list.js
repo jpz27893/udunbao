@@ -226,9 +226,7 @@ var app = function () {
                 return prev;
               }
             }, 0);
-            if(index === 2){
-              sums[index] = sums[index].toFixed(2)
-            }
+            sums[index] = sums[index].toFixed(2)
           } else {
             sums[index] = 'N/A';
           }
