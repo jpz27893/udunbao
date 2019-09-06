@@ -866,6 +866,10 @@ class Api{
         $offset = ($page - 1) * $count;
         $limit  = $count;
 
+
+        $startTime = date("Y-m-d 00:00:00");
+        $endTime = date("Y-m-d H:i:s");
+
         if($card_no !==''){
             $where['AND']['card_no'] = $card_no;
         }
@@ -874,11 +878,36 @@ class Api{
             if(!is_array($range)){
                 $range = explode(',',$range);
             }
-            $where['AND']['created_at[>=]'] = $range[0];
-            $where['AND']['created_at[<=]'] = $range[1];
+           /* $where['AND']['created_at[>=]'] = $range[0];
+            $where['AND']['created_at[<=]'] = $range[1];*/
+            $startTime = $range[0];
+            $endTime = $range[1];
         }
         $where['ORDER'] = [$orderBy => $sort];
         $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
+
+        foreach ($list as $key=>$value){
+            $orderCount = $this->db->count('banks_logs','*',[
+                'and'=>[
+                    'card_no' => $value['card_no'],
+                    'margin[<]' => 0,
+                    'created_at[>=]' => $startTime,
+                    'created_at[<=]' => $endTime
+                ]
+            ]);
+            $list[$key]['count'] = $orderCount;
+
+            $orderSum = $this->db->sum('banks_logs','margin',[
+                'and'=>[
+                    'card_no' => $value['card_no'],
+                    'margin[<]' => 0,
+                    'created_at[>=]' => $startTime,
+                    'created_at[<=]' => $endTime
+                ]
+            ]);
+            $list[$key]['sum'] = $orderSum;
+        }
+
         success([
             'list'  => $list?:[],
             'total' => $this->db->count('banks','*',$where)?:0,

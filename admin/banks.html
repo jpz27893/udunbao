@@ -80,6 +80,13 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        label="订单总计">
+                    <template slot-scope="scope">
+                        <p style="font-size: 12px;">今日单量：{{scope.row.count}}</p>
+                        <p style="font-size: 12px;">今日总额：{{Math.abs(scope.row.sum)}}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
                         width="80px"
                         prop="online"
                         label="在线状态">

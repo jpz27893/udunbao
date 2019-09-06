@@ -71,7 +71,6 @@
             logout(){
                 clearToken();
                 location.href = 'login.html';
-                this.$message.success('退出成功');
             }
         }
     });
