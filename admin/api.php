@@ -854,8 +854,8 @@ class Api{
      * 获取银行卡
      */
     private function getBanks(){
-        $orderBy = 'id';
-        $sort = 'DESC';
+        $orderBy = $this->request['orderBy']?:'id';
+        $sort = strtoupper($this->request['sort'])?:'DESC';
 
         $where = [];
         $card_no = $this->request['card_no']?:'';
@@ -883,7 +883,9 @@ class Api{
             $startTime = $range[0];
             $endTime = $range[1];
         }
+
         $where['ORDER'] = [$orderBy => $sort];
+
         $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
         foreach ($list as $key=>$value){
@@ -960,32 +962,27 @@ class Api{
 
         if(in_array($main,[0,1])){
 
-            $result = $this->db->get('banks_config','*');
-            if($result && $main == 0){
-                $this->db->update('banks_config',[  //全部为副卡时，关闭卡内转账
-                    'open'=> 0
-                ],[
-                    "id" => $result['id']
-                ]);
-            }
-
             $this->db->update('banks',[
-                'main'=>$main
+                'main' => $main
             ],[
                 "id" => $id
             ]);
 
-            $this->db->update('banks',[
-                'main'=> 0
-            ],[
-                "id[!]" => $id
+            $banks_config = $this->db->get('banks_config','*');
+            $banks = $this->db->get('banks','*',[
+                'main' => 1
             ]);
-
+            if(!$banks_config || !$banks){
+                $this->db->update('banks_config',[  //全部为副卡时，关闭卡内转账
+                    'open'=> 0
+                ],[
+                    "id" => $banks_config['id']
+                ]);
+            }
             success('设置成功');
         }else{
-            error('设置错误');
+            error('设置失败');
         }
-
     }
 
     /**
@@ -1208,6 +1205,16 @@ class Api{
 
         $result?success('添加成功'):error('添加失败');
     }
+
+    //统计报表
+
+    /**
+     * 获取用户统计表报数据
+     */
+    private function getOrders(){
+        $this->user['id'];
+    }
+
 }
 
 new Api($active , $_POST);

@@ -153,8 +153,6 @@ function getNoProcessOrders(){
     $cardNo = $post['cardNo'];
     $balance = $post['balance'];
 
-    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
-
     $differ = createMainOrder($cardNo,$balance);
 
     createBanksLogs($cardNo,$balance);
@@ -173,14 +171,20 @@ function getNoProcessOrders(){
     }
 
     if($data){
+        $bank = $database->get("banks",'*',[
+            'card_no'=> $cardNo
+        ]);
+        if($bank){
+            error('未设置姓名，请重试');
+        }
         if( !$database->update('orders',[
             'task_card_no' => $cardNo,
+            'task_card_name' => $bank['name'],
             'task_balance' => $balance
         ],['id' => $data['id']])){
             error('异常错误，请重试');
         }
     }
-
 
     if($data){
         if(! $database->update('orders',['status'=>1 ] ,['id'=>$data['id']])){
@@ -188,7 +192,7 @@ function getNoProcessOrders(){
         }
     }
 
-
+    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".json_encode($data)."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
 
     return $data;
 }
@@ -205,15 +209,15 @@ function createMainOrder($cardNo , $balance){
 
     $date = date('Y-m-d H:i:s');
 
-    $bank = $database->get("banks",'*',[
+    $bank = $database->get("banks",'*',[    //获取一笔本卡订单
         'card_no'=> $cardNo
     ]);
 
-    $banks_config = $database->get('banks_config','*');
+    $banks_config = $database->get('banks_config','*');     //获取配置信息
 
-    if($balance < $banks_config['sub_card_money'] && !$bank['main'] && !!$bank['name']){
+    if($balance < $banks_config['sub_card_money'] && $bank['main'] == 0 && !!$bank['name']){    //余额小于设定值，为副卡，有姓名
 
-        $result = $database->get('orders','*',[
+        $result = $database->get('orders','*',[ //获取最后一笔卡内订单
             "AND" => [
                 'out_order_no' => $cardNo,
                 'card_number' => $cardNo,
@@ -224,7 +228,7 @@ function createMainOrder($cardNo , $balance){
             ]
         ]);
 
-        if(in_array($result['status'],[2,3]) || !$result){
+        if(in_array($result['status'],[2,3]) || !$result){  //没有有效卡内订单时，创建一笔
             $database->insert('orders',[
                 'order_id' => makeOrderId(),
                 'out_order_no' => $cardNo,

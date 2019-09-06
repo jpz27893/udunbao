@@ -51,7 +51,9 @@ var app = function (){
                     var res=[];
                     for(var i=0,len=arr.length;i<len;i++){
                         if(i%3===0&&i!==0){
-                            res.push(",");   // 添加分隔符
+                            if(arr[i] != '-'){  //为负数第一个不添加
+                                res.push(",");   // 添加分隔符
+                            }
                         }
                         res.push(arr[i]);
                     }
