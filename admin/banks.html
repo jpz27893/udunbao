@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
     <title>银行卡管理-出款管理后台</title>
     <link rel="stylesheet" href="static/css/common.css">
     <link rel="stylesheet" href="static/css/elementui.css">
@@ -19,12 +20,12 @@
 
 <div id="app">
     <head-component active-index="3"></head-component>
-    <div class="index">
+    <div class="index banks">
         <template>
             <h4 class="title">
                 银行卡管理
             </h4>
-            <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
+            <el-form :inline="true" :model="query" class="demo-form-inline" size="small">
                 <el-form-item label="银行卡账号">
                     <el-input v-model="query.card_no" placeholder="请输入银行卡" clearable></el-input>
                 </el-form-item>
@@ -43,7 +44,8 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSearch">查询</el-button>
-                    <el-button icon="el-icon-setting" @click="onDialogSite()" :loading="cardPollLoading">卡池设置</el-button>
+                    <el-button icon="el-icon-setting" @click="onDialogSite()" :loading="cardPollLoading">卡池设置
+                    </el-button>
                 </el-form-item>
             </el-form>
 
@@ -61,9 +63,15 @@
                 <el-table-column
                         label="基本信息">
                     <template slot-scope="scope">
-                        <p>姓名：{{scope.row.name}}</p>
-                        <p style="font-size: 12px;">类别：{{scope.row.bank_type}}</p>
-                        <p style="font-size: 12px;">卡号：{{scope.row.card_no}}</p>
+                        <el-collapse accordion>
+                            <el-collapse-item>
+                                <template slot="title">
+                                    <p>姓名：{{scope.row.name}}</p>
+                                </template>
+                                <p style="font-size: 12px;">类别：{{scope.row.bank_type}}</p>
+                                <p style="font-size: 12px;">卡号：{{scope.row.card_no}}</p>
+                            </el-collapse-item>
+                        </el-collapse>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -115,10 +123,12 @@
                     <template slot-scope="scope">
                         <el-button
                                 size="mini"
-                                @click="onDialogEdit(scope.row)" >编辑</el-button>
+                                @click="onDialogEdit(scope.row)">编辑
+                        </el-button>
                         <a :href="scope.row.card_no|getHref">
                             <el-button
-                                size="mini">查看明细</el-button>
+                                    size="mini">查看明细
+                            </el-button>
                         </a>
                     </template>
                 </el-table-column>
@@ -138,24 +148,38 @@
                     title="卡池设置"
                     :visible.sync="dialog.visible"
                     width="600px">
-                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" class="form-small">
+                <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px"
+                         class="form-small">
                     <el-form-item label="1." prop="open">
                         <el-checkbox-group v-model="dialog.form.open">
                             <el-checkbox label="1" name="open">开启卡内转账</el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                     <el-form-item label="2." prop="sub_card_money">
-                        副卡金额小于<el-input v-model="dialog.form.sub_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>主卡自动转入
+                        副卡金额小于
+                        <el-input v-model="dialog.form.sub_card_money" maxlength="10" placeholder="0">
+                            <template slot="append">元</template>
+                        </el-input>
+                        主卡自动转入
                     </el-form-item>
                     <el-form-item label="3." prop="main_to_sub">
-                        每次转入<el-input v-model="dialog.form.main_to_sub" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>
+                        每次转入
+                        <el-input v-model="dialog.form.main_to_sub" maxlength="10" placeholder="0">
+                            <template slot="append">元</template>
+                        </el-input>
                     </el-form-item>
                     <el-form-item label="4." prop="main_card_money">
-                        主卡金额小于<el-input v-model="dialog.form.main_card_money" maxlength="10" placeholder="0"><template slot="append">元</template></el-input>报警
+                        主卡金额小于
+                        <el-input v-model="dialog.form.main_card_money" maxlength="10" placeholder="0">
+                            <template slot="append">元</template>
+                        </el-input>
+                        报警
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialog.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="onDialogFormSubmit()" :loading="dialog.btnLoading" :disabled="dialog.btnDisabled">确 定</el-button>
+                        <el-button type="primary" @click="onDialogFormSubmit()" :loading="dialog.btnLoading"
+                                   :disabled="dialog.btnDisabled">确 定
+                        </el-button>
                     </el-form-item>
                 </el-form>
             </el-dialog>
@@ -164,20 +188,27 @@
                     title="银行卡编辑"
                     :visible.sync="dialogEdit.visible"
                     width="600px">
-                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules" label-width="110px" @submit.native.prevent>
+                <el-form ref="dialogEditForm" :model="dialogEdit.form" :rules="dialogEdit.rules"
+                         label-width="110px"
+                         @submit.native.prevent>
                     <el-form-item label="卡号" prop="card_no">
                         <!--<el-input v-model="dialogEdit.form.card_no" placeholder="0"></el-input>-->
                         <span>{{dialogEdit.form.card_no}}</span>
                     </el-form-item>
                     <el-form-item label="姓名" prop="name">
-                        <el-input v-model="dialogEdit.form.name" maxlength="8" placeholder="请输入姓名"></el-input>
+                        <el-input v-model="dialogEdit.form.name" maxlength="8"
+                                  placeholder="请输入姓名"></el-input>
                     </el-form-item>
                     <el-form-item label="类别" prop="bank_type">
-                        <el-input v-model="dialogEdit.form.bank_type" maxlength="30" placeholder="请输入银行卡类别"></el-input>
+                        <el-input v-model="dialogEdit.form.bank_type" maxlength="30"
+                                  placeholder="请输入银行卡类别"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="dialogEdit.visible = false">取 消</el-button>
-                        <el-button type="primary" @click="onDialogEditFormSubmit()" :loading="dialogEdit.btnLoading" :disabled="dialogEdit.btnDisabled">确 定</el-button>
+                        <el-button type="primary" @click="onDialogEditFormSubmit()"
+                                   :loading="dialogEdit.btnLoading"
+                                   :disabled="dialogEdit.btnDisabled">确 定
+                        </el-button>
                     </el-form-item>
                 </el-form>
             </el-dialog>
@@ -186,4 +217,27 @@
 </div>
 
 </body>
+<style>
+    .banks .el-collapse-item__header {
+        height: 28px;
+        line-height: 28px;
+        background: transparent;
+        border-bottom: none;
+    }
+
+    .banks .el-collapse {
+        border-bottom: none;
+        border-top: none;
+    }
+
+    .banks .el-collapse-item__wrap {
+        background: transparent;
+    }
+
+    .banks .el-collapse-item__content {
+        padding-bottom: 0;
+        background: transparent;
+    }
+
+</style>
 </html>

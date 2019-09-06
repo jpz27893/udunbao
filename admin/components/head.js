@@ -13,6 +13,7 @@
             '    </el-menu>\n' +
             '<el-menu :default-active="activeIndex" class="head-menu" mode="horizontal" v-else>\n' +
             '        <el-menu-item index="1"><el-link href="index.html">订单管理</el-link></el-menu-item>\n' +
+            '        <el-menu-item index="2"><el-link href="statistics.html">统计报表</el-link></el-menu-item>\n' +
             '        <el-menu-item index="2"><el-link href="recharge.html">账户充值（余额:￥{{money}}-冻结:￥{{freeze_money}}）</el-link></el-menu-item>\n' +
             '        <el-menu-item style="float: right;"><span @click="logout">退出</span></el-menu-item>\n' +
             '    </el-menu>',
@@ -73,6 +74,5 @@
                 location.href = 'login.html';
             }
         }
-    });
-
+    })
 }();

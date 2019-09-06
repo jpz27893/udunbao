@@ -15,6 +15,11 @@
     <script src="static/js/list.js"></script>
     <script src="components/head.js"></script>
 </head>
+<style>
+  .el-input-group__prepend div.el-select .el-input__inner{
+    text-align: center;
+  }
+</style>
 <body>
 
 <div id="app">
@@ -23,21 +28,29 @@
         <template>
             <h4 class="title">订单管理中心</h4>
             <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
-                <el-form-item label="订单号">
-                    <el-input v-model="query.order_id" placeholder="请输入订单号" clearable></el-input>
+                <el-form-item>
+                  <el-input :placeholder="'请输入查询的内容'" v-model="query[select]" clearable class="input-with-select">
+                    <el-select v-model="select" slot="prepend" @change="changeQuery" placeholder="请选择" style="width: 120px;text-align: center">
+                      <el-option label="订单号" value="order_id"></el-option>
+                      <el-option label="外部订单号" value="out_order_no"></el-option>
+                      <el-option label="卡号" value="card_number"></el-option>
+                      <el-option label="姓名" value="name"></el-option>
+                      <el-option label="金额" value="money"></el-option>
+                    </el-select>
+                  </el-input>
                 </el-form-item>
-                <el-form-item label="外部订单号">
-                    <el-input v-model="query.out_order_no" placeholder="请输入外部订单号" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="卡号">
-                    <el-input v-model="query.card_number" placeholder="请输入卡号" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="姓名">
-                    <el-input v-model="query.name" placeholder="请输入姓名" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="金额">
-                    <el-input v-model="query.money" placeholder="请输入金额" clearable></el-input>
-                </el-form-item>
+<!--                <el-form-item label="外部订单号">-->
+<!--                    <el-input v-model="query.out_order_no" placeholder="请输入外部订单号" clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="卡号">-->
+<!--                    <el-input v-model="query.card_number" placeholder="请输入卡号" clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="姓名">-->
+<!--                    <el-input v-model="query.name" placeholder="请输入姓名" clearable></el-input>-->
+<!--                </el-form-item>-->
+<!--                <el-form-item label="金额">-->
+<!--                    <el-input v-model="query.money" placeholder="请输入金额" clearable></el-input>-->
+<!--                </el-form-item>-->
                 <el-form-item label="管理员" v-if="admin.id == 1">
                     <el-select v-model="query.adminid" placeholder="请选择管理员" clearable>
                         <el-option label="全部" value=""></el-option>
