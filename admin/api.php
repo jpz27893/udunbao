@@ -1,8 +1,8 @@
 <?php
 
-header('Access-Control-Allow-Origin: *');
+/*header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');*/
 
 include "../function.php";
 //include "../lib/jwt.php";
@@ -71,6 +71,7 @@ class Api{
 
             //权限的接口
             $method = [
+                'admins',
                 'banksOrder',
                 'getBanks',
                 'banksLogs',
@@ -111,7 +112,6 @@ class Api{
      * @param $data
      */
     private function login(){
-
         $username = $this->request['username'];
         $password = $this->request['password'];
         $code     = $this->request['code'];
@@ -184,6 +184,7 @@ class Api{
         if($this->user['id'] == 1){
             $admins = $this->db->select('admins',[
                 "id",
+                "username",
                 "nickname"
             ]);
             success($admins);
@@ -280,6 +281,7 @@ class Api{
                 "orders.confirm_ip",
                 "orders.worker",
                 "orders.task_card_no",
+                "orders.task_card_name",
                 "orders.task_balance",
                 "orders.created_at",
                 "orders.updated_at"
@@ -293,7 +295,6 @@ class Api{
         }
 
         success([
-            'banks' => $this->db->select('banks' , '*'),
             'list'  => $orders,
             'total' => $total,
             'count' => count($orders)
@@ -1212,9 +1213,20 @@ class Api{
      * 获取用户统计表报数据
      */
     private function getOrders(){
-        $this->user['id'];
-    }
 
+        $ordersCount = $this->db->count('orders','*',[
+            'user_id' => $this->user['id']
+        ]);
+
+        $ordersSum = $this->db->sum('orders','money',[
+            'user_id' => $this->user['id']
+        ]);
+
+        success([
+            'count' => $ordersCount,
+            'sum' => $ordersSum
+        ]);
+    }
 }
 
 new Api($active , $_POST);

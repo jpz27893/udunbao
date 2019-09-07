@@ -57,20 +57,20 @@ var app = function (){
       //获取表格数据
       netTableData(loading ,cb){
         this.tableLoading = loading;
-        // request.get('api.php?a=getIncomes',{
-        //   params: this.query
-        // })
-        //   .then(res => {
-        //     let {data} = res;
-        //     this.tableLoading = false;
-        //     this.tableData = data.data;
-        //     cb && cb();
-        //   })
-        //   .catch(err=>{
-        //     this.$message.error(err);
-        //     this.tableLoading = false;
-        //     cb && cb();
-        //   })
+        request.get('api.php?a=getOrders',{
+          params: this.query
+        })
+          .then(res => {
+            let {data} = res;
+            this.tableLoading = false;
+            this.tableData = data.data;
+            cb && cb();
+          })
+          .catch(err=>{
+            this.$message.error(err);
+            this.tableLoading = false;
+            cb && cb();
+          })
       },
       //分页发生变化时
       handleCurrentChange(){

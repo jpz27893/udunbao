@@ -54,7 +54,7 @@
                 <el-form-item label="管理员" v-if="admin.id == 1">
                     <el-select v-model="query.adminid" placeholder="请选择管理员" clearable>
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="(item, index) in admins" :label="item.nickname" :value="item.id" :key="item.id"></el-option>
+                        <el-option v-for="(item, index) in admins" :label="item.username" :value="item.id" :key="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="订单状态">

@@ -165,36 +165,38 @@ function getNoProcessOrders(){
         ]
     ]);
 
-    $ids = [];
-    foreach ($data as $key => $val){
-        $ids[] = $val['id'];
-    }
+//    $ids = [];
+//    foreach ($data as $key => $val){
+//        $ids[] = $val['id'];
+//    }
 
     if($data){
         $bank = $database->get("banks",'*',[
             'card_no'=> $cardNo
         ]);
-        if($bank){
-            error('未设置姓名，请重试');
-        }
         if( !$database->update('orders',[
             'task_card_no' => $cardNo,
             'task_card_name' => $bank['name'],
-            'task_balance' => $balance
+            'task_balance' => $balance,
+            'status'=> 1
         ],['id' => $data['id']])){
             error('异常错误，请重试');
         }
-    }
 
-    if($data){
-        if(! $database->update('orders',['status'=>1 ] ,['id'=>$data['id']])){
-            error('异常错误，请重试');
+        $intercept = file_get_contents("cf.txt");
+        if(strstr($intercept,"'".$data['id']."'")){
+            error('重复订单');
         }
+        file_put_contents('cf.txt',"'".$data['id']."'".PHP_EOL,FILE_APPEND);
+
+
+        file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".json_encode($data)."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
+
+        return $data;
     }
 
-    file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".json_encode($data)."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
+    return [];
 
-    return $data;
 }
 
 /**
@@ -215,7 +217,7 @@ function createMainOrder($cardNo , $balance){
 
     $banks_config = $database->get('banks_config','*');     //获取配置信息
 
-    if($balance < $banks_config['sub_card_money'] && $bank['main'] == 0 && !!$bank['name']){    //余额小于设定值，为副卡，有姓名
+    if($balance < $banks_config['sub_card_money'] && !$bank['main'] && !!$bank['name']){    //余额小于设定值，为副卡，有姓名
 
         $result = $database->get('orders','*',[ //获取最后一笔卡内订单
             "AND" => [
