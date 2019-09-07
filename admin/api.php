@@ -1,8 +1,8 @@
 <?php
 
-/*header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');*/
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');
 
 include "../function.php";
 //include "../lib/jwt.php";
@@ -1232,13 +1232,13 @@ class Api{
 
         $days = round((strtotime($endTime)-strtotime($startTime))/3600/24);
 
-        if($days > 90){
-            error('查询数据最多间隔三个月');
+        if($days > 91){
+            error('查询数据最多间隔3个月');
         }
-
         //计算每天
         $allDays = array_reverse(prDates($startTime,$endTime));
         $result = [];
+
         foreach ($allDays as $key=>$value){
             $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($allDays[$key])),date("Y-m-d 23:59:59",strtotime($allDays[$key]))];
 
@@ -1247,6 +1247,8 @@ class Api{
             $ordersSum = $this->db->sum('orders','money',$where);
             array_push($result,['date'=>$allDays[$key],'count'=>$ordersCount,'sum' => $ordersSum]);
         }
+
+
 
         //计算总数
         $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
