@@ -91,7 +91,6 @@ var app = function (){
             getHref:function(val){
                 return 'bankslogs.html?card_no=' + val
             },
-
             moneyFormat:function(val){
                 if(val){
                     console.log(val);

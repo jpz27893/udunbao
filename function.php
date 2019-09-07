@@ -572,6 +572,23 @@ function deep_in_array($value, $array) {
 }
 
 /**
+ * 获取两个日期之间的所有日期
+ * @param $start
+ * @param $end
+ * @return array
+ */
+function prDates($start,$end){
+    $dt_start = strtotime($start);
+    $dt_end = strtotime($end);
+    $array = [];
+    while ($dt_start<=$dt_end){
+        array_push($array,date('Y-m-d',$dt_start));
+        $dt_start = strtotime('+1 day',$dt_start);
+    }
+    return $array;
+}
+
+/**
  * 读取csv
  * @param $fileName
  * @param int $line

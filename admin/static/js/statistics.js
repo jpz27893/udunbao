@@ -44,6 +44,32 @@ var app = function (){
     created(){
       this.init();
     },
+    filters:{
+      moneyFormat:function(val){
+        if(val){
+          console.log(val);
+          val=val.toString().split(".");  // 分隔小数点
+          var arr=val[0].split("").reverse();  // 转换成字符数组并且倒序排列
+          var res=[];
+          for(var i=0,len=arr.length;i<len;i++){
+            if(i%3===0&&i!==0){
+              if(arr[i] != '-'){  //为负数第一个不添加
+                res.push(",");   // 添加分隔符
+              }
+            }
+            res.push(arr[i]);
+          }
+          res.reverse(); // 再次倒序成为正确的顺序
+          if(val[1]){  // 如果有小数的话添加小数部分
+            res=res.join("").concat("."+val[1]);
+          }else{
+            res=res.join("");
+          }
+
+          return res;
+        }
+      }
+    },
     methods:{
       init(){
         this.netTableData(false);
@@ -63,7 +89,8 @@ var app = function (){
           .then(res => {
             let {data} = res;
             this.tableLoading = false;
-            this.tableData = data.data;
+            console.log(res);
+            this.tableData.list = data.data;
             cb && cb();
           })
           .catch(err=>{

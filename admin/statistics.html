@@ -27,7 +27,7 @@
         <el-form-item>
           <el-date-picker
                   v-model="query.range"
-                  type="datetimerange"
+                  type="daterange"
                   :picker-options="pickerOptions"
                   value-format="yyyy-MM-dd HH:mm:ss"
                   range-separator="至"
@@ -47,8 +47,15 @@
               size="small"
               style="width: 100%">
         <el-table-column
-                prop="money"
+                prop="date"
+                label="日期">
+        </el-table-column>
+        <el-table-column
+                prop="sum"
                 label="交易金额">
+          <template slot-scope="scope">
+            <span>{{Math.abs(scope.row.sum).toFixed(2) | moneyFormat}}</span>
+          </template>
         </el-table-column>
         <el-table-column
                 prop="count"
@@ -58,7 +65,7 @@
                 label="总手续费">
         </el-table-column>
       </el-table>
-      <div class="block" style="margin-top: 20px; text-align: right">
+     <!-- <div class="block" style="margin-top: 20px; text-align: right">
         <el-pagination
                 @size-change="handleSizeChange"
                 :current-page.sync="query.page"
@@ -67,7 +74,7 @@
                 layout="sizes ,prev, pager, next"
                 :total="tableData.total">
         </el-pagination>
-      </div>
+      </div>-->
     </template>
   </div>
 </div>

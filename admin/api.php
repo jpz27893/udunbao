@@ -684,8 +684,8 @@ class Api{
      */
     private function uploadCsv(){
 
-        if($_FILES['file']['type'] != 'application/vnd.ms-excel'){
-            error('请上传csv或xls的文件');
+        if($_FILES['file']['type'] != 'application/vnd.ms-excel' || explode(".", $_FILES['file']['name'])[1] != "csv"){
+            error('请上传csv文件');
         }
 
         $temp = explode(".", $_FILES["file"]["name"]);
@@ -1214,18 +1214,48 @@ class Api{
      */
     private function getOrders(){
 
-        $ordersCount = $this->db->count('orders','*',[
-            'user_id' => $this->user['id']
-        ]);
+        $range = $this->request['range']?:'';
 
-        $ordersSum = $this->db->sum('orders','money',[
-            'user_id' => $this->user['id']
-        ]);
+        $startTime = date("Y-m-d", strtotime('-30 day'));
+        $endTime = date("Y-m-d");
 
-        success([
-            'count' => $ordersCount,
-            'sum' => $ordersSum
-        ]);
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $startTime = $range[0];
+            $endTime = $range[1];
+        }
+
+        $where['AND']['user_id'] = $this->user['id'];
+        $where['AND']['status'] = 2;
+
+        $days = round((strtotime($endTime)-strtotime($startTime))/3600/24);
+
+        if($days > 90){
+            error('查询数据最多间隔三个月');
+        }
+
+        //计算每天
+        $allDays = array_reverse(prDates($startTime,$endTime));
+        $result = [];
+        foreach ($allDays as $key=>$value){
+            $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($allDays[$key])),date("Y-m-d 23:59:59",strtotime($allDays[$key]))];
+
+            $ordersCount = $this->db->count('orders','*',$where);
+
+            $ordersSum = $this->db->sum('orders','money',$where);
+            array_push($result,['date'=>$allDays[$key],'count'=>$ordersCount,'sum' => $ordersSum]);
+        }
+
+        //计算总数
+        $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
+        $count = $this->db->count('orders','*',$where);
+        $sum = $this->db->sum('orders','money',$where);
+
+        array_unshift($result,['date'=>'总计','count'=>$count,'sum' => $sum]);
+
+        success($result);
     }
 }
 
