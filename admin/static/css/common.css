@@ -130,6 +130,15 @@ ul,ol,li{
     height: 45px;
     margin-bottom: 18px;
 }
+.index .title-size1{
+    text-align: left;
+    font-size: 16px;
+    font-weight: normal;
+    height: 36px;
+    line-height: 36px;
+    margin-bottom: 9px;
+}
+
 .index .title .el-breadcrumb{
     font-size: 20px;
 }

@@ -12,9 +12,10 @@
   <script src="static/js/lib/request.js"></script>
   <script src="static/js/lib/elementui.js"></script>
   <script src="static/js/lib/qs.js"></script>
-  <script src="static/js/statistics.js"></script>
+  <script src="static/js/statistic.js"></script>
   <script src="components/head.js"></script>
 </head>
+
 <body>
 
 <div id="app">
@@ -39,10 +40,8 @@
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
       </el-form>
-
-      <h4 class="title-size1">总计</h4>
       <el-table
-              :data="tableData.amount"
+              :data="tableData.list"
               v-loading="tableLoading"
               border
               size="small"
@@ -66,50 +65,6 @@
                 label="总手续费">
         </el-table-column>
       </el-table>
-      <h4 class="title-size1">用户列表</h4>
-      <el-table
-              :data="tableData.list"
-              v-loading="tableLoading"
-              border
-              size="small"
-              style="width: 100%">
-        <el-table-column
-                prop="id"
-                label="id">
-        </el-table-column>
-        <el-table-column
-                prop="username"
-                label="用户名">
-        </el-table-column>
-        <el-table-column
-                prop="nickname"
-                label="昵称">
-        </el-table-column>
-        <el-table-column
-                prop="sum"
-                label="交易金额">
-          <template slot-scope="scope">
-            <span>{{Math.abs(scope.row.sum).toFixed(2) | moneyFormat}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-                prop="count"
-                label="交易笔数">
-        </el-table-column>
-        <el-table-column
-                label="总手续费">
-        </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <a :href="scope|getHref">
-              <el-button
-                      size="mini">查看明细
-              </el-button>
-            </a>
-          </template>
-        </el-table-column>
-      </el-table>
-
      <!-- <div class="block" style="margin-top: 20px; text-align: right">
         <el-pagination
                 @size-change="handleSizeChange"

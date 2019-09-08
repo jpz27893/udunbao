@@ -93,7 +93,6 @@ var app = function (){
             },
             moneyFormat:function(val){
                 if(val){
-                    console.log(val);
                     val=val.toString().split(".");  // 分隔小数点
                     var arr=val[0].split("").reverse();  // 转换成字符数组并且倒序排列
                     var res=[];

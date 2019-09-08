@@ -10,6 +10,7 @@ include "../lib/GoogleAuthenticator.php";
 
 $active = $_GET['a'];
 
+
 class Api{
 
     protected $db = null;
@@ -40,19 +41,17 @@ class Api{
             '192.168.31.179',
             '192.168.31.100',
             '192.168.31.36',
-            '192.168.31.36:8888',
             '202.178.125.199',
             '103.114.90.82',
             '103.114.89.13'
         ];
-
 
         if(!in_array(get_client_ip(),$ip)){
             error('非法操作!');
         }
 
         if($active !== 'login'){
-            $jwt =new Jwt;
+            $jwt = new Jwt;
             $token = $_SERVER['HTTP_TOKEN'] ;
             if(empty($token)){
                 error('Unauthorized.');
@@ -85,7 +84,8 @@ class Api{
                 'addAdmin',
                 'getIncomes',
                 'setIncomeStatus',
-                'getBanksMoney'
+                'getBanksMoney',
+                'getAllOrders'
             ];
             $exclude = ['login'];   //排除的接口
             if(!in_array($active,$exclude)){
@@ -94,7 +94,7 @@ class Api{
                 }
             }
 
-            $result = $this->db->count('salts',['and' =>['user_id'=>$payload['id'] ,'salt' => $salt,'life_at[>]' => date('Y-m-d H:i:s')]]);
+            $result = $this->db->count('salts',['user_id'=>$payload['id'] ,'salt' => $salt,'life_at[>]' => date('Y-m-d H:i:s')]);
 
             //if( !$this->db->count('admins',['and' =>['username'=>$username ,'salt' => $salt]])){
             if( !$result ){
@@ -163,7 +163,7 @@ class Api{
             'now_login_at' => date('Y-m-d H:i:s'),
             'now_login_ip' => get_client_ip()
         ],['id'=>$res['id']]);
-        $array = array('id'=>$res['id'],'iss'=>$username,'iat'=>time(),'exp'=>time()+7200,'nbf'=>time(),'salt'=>$salt,'sub'=>'www.admin.com','jti'=>md5(uniqid('JWT').time()));
+        $array = array('id'=>$res['id'],'iss'=>$username,'roles'=>$res['id']==1?['admins']:['user'],'money'=>$res['money'],'iat'=>time(),'exp'=>time()+7200,'nbf'=>time(),'salt'=>$salt,'sub'=>'www.admin.com','jti'=>md5(uniqid('JWT').time()));
         $token = Jwt::getToken($array);
         success([
             'token' => $token
@@ -255,7 +255,7 @@ class Api{
         if ($this->user['id'] != 1){
             $where['AND'][$orders.'user_id'] = $this->user['id'];
             $orders = $this->db->select('orders','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
-            $total = $this->db->count('orders','*',$where);
+            $total = $this->db->count('orders',$where);
         }else{
 
             if($admin !== ''){
@@ -359,12 +359,10 @@ class Api{
         if( // 如果不是散件，则判断今天是否有相同卡号和金额的
             $status === 0 &&
             $this->db->count('orders',[
-                'AND' => [
-                    'card_number' => $card_number,
-                    'money' => $money,
-                    'status[!]' => [-2,3],
-                    'created_at[>]' => date('Y-m-d')." 00:00:00"
-                ]
+                'card_number' => $card_number,
+                'money' => $money,
+                'status[!]' => [-2,3],
+                'created_at[>]' => date('Y-m-d')." 00:00:00"
             ])
         ){
             $status = -1;
@@ -452,7 +450,7 @@ class Api{
 
         $list = $this->db->select('income','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
-        $total = $this->db->count('income','*',$where);
+        $total = $this->db->count('income',$where);
 
         success([
             'list'  => $list,
@@ -544,7 +542,7 @@ class Api{
 
         $list = $this->db->select('income_logs','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
-        $total = $this->db->count('income_logs','*',$where);
+        $total = $this->db->count('income_logs',$where);
 
         success([
             'list'  => $list,
@@ -614,7 +612,7 @@ class Api{
             "income.updated_at"
         ],array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
-        $total = $this->db->count('income','*',$where);
+        $total = $this->db->count('income',$where);
 
         success([
             'list'  => $list,
@@ -816,7 +814,7 @@ class Api{
         $where['ORDER'] = [$orderBy => $sort];
 
         $orders = $this->db->select('orders','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
-        $total = $this->db->count('orders','*',$where);
+        $total = $this->db->count('orders',$where);
 
         success([
             'list'  => $orders,
@@ -890,13 +888,11 @@ class Api{
         $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
         foreach ($list as $key=>$value){
-            $orderCount = $this->db->count('banks_logs','*',[
-                'and'=>[
-                    'card_no' => $value['card_no'],
-                    'margin[<]' => 0,
-                    'created_at[>=]' => $startTime,
-                    'created_at[<=]' => $endTime
-                ]
+            $orderCount = $this->db->count('banks_logs',[
+                'card_no' => $value['card_no'],
+                'margin[<]' => 0,
+                'created_at[>=]' => $startTime,
+                'created_at[<=]' => $endTime
             ]);
             $list[$key]['count'] = $orderCount;
 
@@ -913,7 +909,7 @@ class Api{
 
         success([
             'list'  => $list?:[],
-            'total' => $this->db->count('banks','*',$where)?:0,
+            'total' => $this->db->count('banks',$where)?:0,
             'count' => count($list)
         ]);
     }
@@ -1122,7 +1118,7 @@ class Api{
 
         success([
             'list'  => $list?:[],
-            'total' => $this->db->count('admins','*',$where)?:0,
+            'total' => $this->db->count('admins',$where)?:0,
             'count' => count($list)
         ]);
     }
@@ -1215,6 +1211,7 @@ class Api{
     private function getOrders(){
 
         $range = $this->request['range']?:'';
+        $id = $this->request['id']?:'';
 
         $startTime = date("Y-m-d", strtotime('-30 day'));
         $endTime = date("Y-m-d");
@@ -1228,6 +1225,10 @@ class Api{
         }
 
         $where['AND']['user_id'] = $this->user['id'];
+        if($this->user['id'] == 1 && $id != ''){
+            $where['AND']['user_id'] = $id;
+        }
+
         $where['AND']['status'] = 2;
 
         $days = round((strtotime($endTime)-strtotime($startTime))/3600/24);
@@ -1242,23 +1243,78 @@ class Api{
         foreach ($allDays as $key=>$value){
             $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($allDays[$key])),date("Y-m-d 23:59:59",strtotime($allDays[$key]))];
 
-            $ordersCount = $this->db->count('orders','*',$where);
+            $ordersCount = $this->db->count('orders',$where);
 
             $ordersSum = $this->db->sum('orders','money',$where);
-            array_push($result,['date'=>$allDays[$key],'count'=>$ordersCount,'sum' => $ordersSum]);
+            array_push($result,['date'=>$allDays[$key],'count'=>$ordersCount,'sum' => $ordersSum?:0]);
         }
-
-
 
         //计算总数
         $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
-        $count = $this->db->count('orders','*',$where);
-        $sum = $this->db->sum('orders','money',$where);
+        $count = $this->db->count('orders',$where);
 
-        array_unshift($result,['date'=>'总计','count'=>$count,'sum' => $sum]);
+        $sum = $this->db->sum('orders','money',$where);
+        array_unshift($result,['date'=>'总计','count'=>$count,'sum' =>$sum?:0]);
 
         success($result);
     }
+
+    /**
+     * 获取所有用户统计表报数据
+     */
+    private function getAllOrders(){
+        $range = $this->request['range']?:'';
+
+        $startTime = date("Y-m-d 00:00:00");
+        $endTime = date("Y-m-d 23:59:59");
+
+        if($range !== ''){
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
+            $startTime = $range[0];
+            $endTime = $range[1];
+        }
+
+        $where['AND']['status'] = 2;
+
+        $days = round((strtotime($endTime)-strtotime($startTime))/3600/24);
+
+        if($days > 91){
+            error('查询数据最多间隔3个月');
+        }
+
+        $result = $this->db->select('admins',[
+            '[><]orders'=>['id'=>'user_id']
+        ],[
+            'admins.id',
+            'admins.username',
+            'admins.nickname',
+            'sum' => $this->db->raw('sum(orders.money)'),
+            'count' => $this->db->raw('count(orders.money)')
+        ],[
+            'AND'=>[
+                'admins.id[!]'=> [1],
+                'orders.status' => 2,
+                'orders.created_at[<>]' => [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))],
+            ],
+            'GROUP' => 'admins.id'
+        ]);
+
+        //计算总数
+        $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
+
+        $count = $this->db->count('orders',array_merge($where,['user_id[!]'=> [1]]));
+        $sum = $this->db->sum('orders','money',array_merge($where,['user_id[!]'=> [1]]));
+
+        success([
+            'amount'=> [['date'=>'总计','count'=>$count,'sum' =>$sum?:0]],
+            'list'=> $result
+        ]);
+    }
+
+
+
 }
 
 new Api($active , $_POST);

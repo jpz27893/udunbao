@@ -8,7 +8,6 @@ var app = function (){
       },
       tableData: {
         list : [],
-        amount:[],
         count : 0,
         total : 0
       },
@@ -46,9 +45,6 @@ var app = function (){
       this.init();
     },
     filters:{
-      getHref:function(val){
-        return 'statisticslogs.html?id=' + val.row.id + '&username=' + val.row.username
-      },
       moneyFormat:function(val){
         if(val){
           val=val.toString().split(".");  // 分隔小数点
@@ -86,13 +82,13 @@ var app = function (){
       //获取表格数据
       netTableData(loading ,cb){
         this.tableLoading = loading;
-        request.get('api.php?a=getAllOrders',{
+        request.get('api.php?a=getOrders',{
           params: this.query
         })
           .then(res => {
             let {data} = res;
             this.tableLoading = false;
-            this.tableData = data.data;
+            this.tableData.list = data.data;
             cb && cb();
           })
           .catch(err=>{

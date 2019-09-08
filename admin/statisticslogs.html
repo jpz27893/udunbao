@@ -13,22 +13,19 @@
     <script src="static/js/lib/elementui.js"></script>
     <script src="static/js/lib/qs.js"></script>
     <script src="components/head.js"></script>
-    <script src="static/js/bankslogs.js"></script>
+    <script src="static/js/statisticslogs.js"></script>
 </head>
 <body>
 
 <div id="app">
-    <head-component active-index="4"></head-component>
+    <head-component active-index="2"></head-component>
     <div class="index">
         <template>
             <h4 class="title">
-                <el-breadcrumb separator="/">
-                    <el-breadcrumb-item><a href="banks.html">银行卡管理</a></el-breadcrumb-item>
-                    <el-breadcrumb-item>银行卡明细</el-breadcrumb-item>
-                </el-breadcrumb>
+                <el-page-header @back="goBack" content="用户详情"></el-page-header>
             </h4>
             <div class="card_no">
-                银行卡：{{query.card_no}}
+                用户名：{{query.username}}
             </div>
             <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
                 <!--<el-form-item label="收支">
@@ -61,52 +58,26 @@
                     border
                     size="small"
                     style="width: 100%">
-
                 <el-table-column
-
-                        prop="id"
-                        label="id">
+                        prop="date"
+                        label="日期">
                 </el-table-column>
                 <el-table-column
-                        prop="created_at"
-                        label="交易时间">
-                </el-table-column>
-                <el-table-column
-                        prop="margin"
-                        label="交易差额">
+                        prop="sum"
+                        label="交易金额">
                     <template slot-scope="scope">
-                        <span style="color: red" v-if="scope.row.margin > 0">
-                            {{scope.row.margin | moneyFormat}}
-                        </span>
-                        <span style="color: green" v-else>
-                            {{scope.row.margin | moneyFormat}}
-                        </span>
-
+                        <span>{{Math.abs(scope.row.sum).toFixed(2) | moneyFormat}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="balance"
-                        label="账户余额">
-                    <template slot-scope="scope">
-                        <span style="color: #F56C6C">
-                            {{scope.row.balance | moneyFormat}}
-                        </span>
-                    </template>
+                        prop="count"
+                        label="交易笔数">
                 </el-table-column>
                 <el-table-column
-                        prop="margin"
-                        label="摘要">
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.margin > 0">
-                            充值
-                        </span>
-                        <span v-else>
-                            出款
-                        </span>
-                    </template>
+                        label="总手续费">
                 </el-table-column>
             </el-table>
-            <div class="block" style="margin-top: 20px; text-align: right">
+            <!--<div class="block" style="margin-top: 20px; text-align: right">
                 <el-pagination
                         @size-change="handleSizeChange"
                         :current-page.sync="query.page"
@@ -115,8 +86,7 @@
                         layout="sizes ,prev, pager, next"
                         :total="tableData.total">
                 </el-pagination>
-            </div>
-
+            </div>-->
         </template>
 
     </div>
