@@ -3,7 +3,7 @@ var app = function (){
         el: '#app',
         data : {
             query : {
-                count : 10,
+                count : 100,
                 page : 1
             },
             tableData: {
@@ -90,6 +90,29 @@ var app = function (){
         filters:{
             getHref:function(val){
                 return 'bankslogs.html?card_no=' + val
+            },
+            moneyFormat:function(val){
+                if(val){
+                    val=val.toString().split(".");  // 分隔小数点
+                    var arr=val[0].split("").reverse();  // 转换成字符数组并且倒序排列
+                    var res=[];
+                    for(var i=0,len=arr.length;i<len;i++){
+                        if(i%3===0&&i!==0){
+                            if(arr[i] != '-'){  //为负数第一个不添加
+                                res.push(",");   // 添加分隔符
+                            }
+                        }
+                        res.push(arr[i]);
+                    }
+                    res.reverse(); // 再次倒序成为正确的顺序
+                    if(val[1]){  // 如果有小数的话添加小数部分
+                        res=res.join("").concat("."+val[1]);
+                    }else{
+                        res=res.join("");
+                    }
+
+                    return res;
+                }
             }
         },
         watch: {
@@ -118,6 +141,11 @@ var app = function (){
                 setTimeout( () => {
                     this.init();
                 },5000);
+            },
+            tableSort(column, prop, order) {
+                this.query.orderBy = column.prop;
+                column.order ? this.query.sort = column.order.split('ending')[0] : this.query.sort = 'asc';
+                this.netTableData(false)
             },
             //搜索
             onSearch(){

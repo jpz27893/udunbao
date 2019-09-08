@@ -72,6 +72,9 @@ var app = function (){
                 this.netTableData(true);
                 this.poll();
             },
+            goBack() {
+                history.back(-1);
+            },
             poll(){
                 setTimeout(()=>{
                     this.netTableData(false,this.poll);
@@ -106,14 +109,15 @@ var app = function (){
                         return "";
                     }
                 }
-                this.query.card_no = getUrlParam("card_no");
-                request.get('api.php?a=bankslogs',{
+                this.query.id = getUrlParam("id");
+                this.query.username = getUrlParam("username");
+                request.get('api.php?a=getOrders',{
                     params: this.query
                 })
                     .then(res => {
                         let {data} = res;
                         this.tableLoading = false;
-                        this.tableData = data.data;
+                        this.tableData.list = data.data;
                         cb && cb();
                     })
                     .catch(err=>{

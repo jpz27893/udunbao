@@ -253,6 +253,10 @@
                             <td>{{dialog.table.task_card_no || '-'}}</td>
                         </tr>
                         <tr>
+                            <td>姓名</td>
+                            <td>{{dialog.table.task_card_name || '-'}}</td>
+                        </tr>
+                        <tr>
                             <td>账面余额</td>
                             <td>{{dialog.table.task_balance || '-'}}</td>
                         </tr>
@@ -262,8 +266,6 @@
                         </tr>
                         </tbody>
                     </table>
-
-
                 </div>
 
                 <el-form ref="dialogForm" :model="dialog.form" :rules="dialog.rules" label-width="110px" v-if="dialog.action === 'addOrder'">
