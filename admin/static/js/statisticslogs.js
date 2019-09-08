@@ -100,7 +100,7 @@ var app = function (){
                             arr = arrPara[i].split("=");
 
                             if (arr != null && arr[0] == paraName) {
-                                return arr[1];
+                                return decodeURI(arr[1]);
                             }
                         }
                         return "";

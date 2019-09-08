@@ -220,7 +220,7 @@ ul,ol,li{
     width: 170px;
 }
 
-.card_no{
+.card_no p{
     font-size: 18px;
     margin-bottom: 18px;
 }

@@ -288,7 +288,7 @@ function createBanksLogs($cardNo , $balance){
  * @param $status
  * @return bool|int
  */
-function callback($id , $status , $msg){
+function callback($id , $status , $balance , $msg){
     global $database;
 
     $where = ['id' => $id];

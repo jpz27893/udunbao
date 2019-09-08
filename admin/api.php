@@ -888,20 +888,38 @@ class Api{
         $list = $this->db->select('banks' , '*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
         foreach ($list as $key=>$value){
-            $orderCount = $this->db->count('banks_logs',[
-                'card_no' => $value['card_no'],
-                'margin[<]' => 0,
-                'created_at[>=]' => $startTime,
-                'created_at[<=]' => $endTime
+            $successOrders = $this->db->count('orders',[
+                'card_number' => $value['card_no'],
+                'status' => 2,
+                'created_at[<>]' => [$startTime,$endTime]
             ]);
-            $list[$key]['count'] = $orderCount;
+            $list[$key]['successOrders'] = $successOrders;
 
-            $orderSum = $this->db->sum('banks_logs','margin',[
-                'and'=>[
-                    'card_no' => $value['card_no'],
-                    'margin[<]' => 0,
-                    'created_at[>=]' => $startTime,
-                    'created_at[<=]' => $endTime
+            $errorOrders = $this->db->count('orders',[
+                'card_number' => $value['card_no'],
+                'status' => 3,
+                'created_at[<>]' => [$startTime,$endTime]
+            ]);
+            $list[$key]['errorOrders'] = $errorOrders;
+
+            $loadingOrders = $this->db->count('orders',[
+                'card_number' => $value['card_no'],
+                'status' => 1,
+                'created_at[<>]' => [$startTime,$endTime]
+            ]);
+            $list[$key]['loadingOrders'] = $loadingOrders;
+
+            $divisor = $successOrders + $errorOrders + $loadingOrders;
+            $divisor = $divisor?:100;
+
+            $rate = round($successOrders/($divisor)*100,2)."％";
+            $list[$key]['rate'] = $rate;
+
+            $orderSum = $this->db->sum('orders','money',[
+                'AND'=>[
+                    'card_number' => $value['card_no'],
+                    'status' => 2,
+                    'created_at[<>]' => [$startTime,$endTime]
                 ]
             ]);
             $list[$key]['sum'] = $orderSum;

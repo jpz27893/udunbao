@@ -72,6 +72,9 @@ var app = function (){
                 this.netTableData(true);
                 this.poll();
             },
+            goBack() {
+                history.back(-1);
+            },
             poll(){
                 setTimeout(()=>{
                     this.netTableData(false,this.poll);
@@ -97,7 +100,7 @@ var app = function (){
                             arr = arrPara[i].split("=");
 
                             if (arr != null && arr[0] == paraName) {
-                                return arr[1];
+                                return decodeURI(arr[1]);
                             }
                         }
                         return "";
@@ -107,6 +110,7 @@ var app = function (){
                     }
                 }
                 this.query.card_no = getUrlParam("card_no");
+                this.query.name = getUrlParam("name");
                 request.get('api.php?a=bankslogs',{
                     params: this.query
                 })

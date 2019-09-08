@@ -22,13 +22,11 @@
     <div class="index">
         <template>
             <h4 class="title">
-                <el-breadcrumb separator="/">
-                    <el-breadcrumb-item><a href="banks.html">银行卡管理</a></el-breadcrumb-item>
-                    <el-breadcrumb-item>银行卡明细</el-breadcrumb-item>
-                </el-breadcrumb>
+                <el-page-header @back="goBack" content="银行卡明细"></el-page-header>
             </h4>
             <div class="card_no">
-                银行卡：{{query.card_no}}
+                <p>姓名：{{query.name}}</p>
+                <p>银行卡：{{query.card_no}}</p>
             </div>
             <el-form :inline="true" :model="query" class="demo-form-inline" size="small" >
                 <!--<el-form-item label="收支">
@@ -63,7 +61,7 @@
                     style="width: 100%">
 
                 <el-table-column
-
+                        width="80px"
                         prop="id"
                         label="id">
                 </el-table-column>

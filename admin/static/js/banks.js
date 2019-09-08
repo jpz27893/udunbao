@@ -89,7 +89,7 @@ var app = function (){
         },
         filters:{
             getHref:function(val){
-                return 'bankslogs.html?card_no=' + val
+                return 'bankslogs.html?card_no=' + val.row.card_no + '&name=' + val.row.name
             },
             moneyFormat:function(val){
                 if(val){

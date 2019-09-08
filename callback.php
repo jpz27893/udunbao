@@ -3,6 +3,7 @@ include "./function.php";
 
 $taskId = intval( $_POST['taskId']);
 $state = intval( $_POST['state']);
+$balance = floatval( $_POST['balance']);
 $msg = $_POST['msg'];
 $sign =  $_POST['sign'];
 
@@ -21,5 +22,5 @@ if(empty($taskId)){
 }
 
 outputJson([
-    'success'=>callback($taskId,$state,$msg)
+    'success'=>callback($taskId,$state,$balance,$msg)
 ]);
