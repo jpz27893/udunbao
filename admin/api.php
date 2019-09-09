@@ -1,8 +1,8 @@
 <?php
 
-header('Access-Control-Allow-Origin: *');
+/*header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');*/
 
 include "../function.php";
 //include "../lib/jwt.php";
@@ -404,6 +404,31 @@ class Api{
         success('取消成功');
 
     }
+
+    private function loadingOrderStatus(){
+        $id = $this->request['id'];
+        $status = $this->request['status']?:'';
+
+        if(!in_array($status,[2,3])){
+            error('设置失败!');
+        }
+
+        $result = $this->db->update('orders',[
+            'differ' => 0,
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+
+        ],[
+            "AND" => [
+                "id" => $id,
+                "status" => 1
+            ]
+        ]);
+
+        $result?success('设置成功'):error('设置失败');
+    }
+
+
     //*** 账号充值
 
     /**
@@ -940,13 +965,20 @@ class Api{
         $sort = 'DESC';
 
         $where = [];
-        $card_no = $this->request['card_no'];
+        $card_no = $this->request['card_no']?:'';
         $range = $this->request['range']?:'';
+        $margin = $this->request['margin'];
         $page = intval($this->request['page']) ?: 1;
         $count = intval($this->request['count'])?:10;
 
         $offset = ($page - 1) * $count;
         $limit  = $count;
+
+        if($margin == 1){
+            $where['AND']['margin[<=]'] = 0;
+        }else if($margin == 2){
+            $where['AND']['margin[>]'] = 0;
+        }
 
         if($card_no !==''){
             $where['AND']['card_no'] = $card_no;
@@ -1330,8 +1362,6 @@ class Api{
             'list'=> $result
         ]);
     }
-
-
 
 }
 

@@ -291,6 +291,7 @@ function createBanksLogs($cardNo , $balance){
 function callback($id , $status , $balance , $msg){
     global $database;
 
+    $balance = $balance?:0;
     $where = ['id' => $id];
 
     $order = $database->get('orders','*',$where);
@@ -312,10 +313,11 @@ function callback($id , $status , $balance , $msg){
     }
 
     if( $status == 0 && (empty(trim($msg)) || is_numeric(strpos($msg,'手动')))){
+        $database->update('orders',['task_before_balance'=>$balance],['id' => $id]);
         return false;
     }
 
-    return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3],['id' => $id]);
+    return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3,'task_before_balance'=>$balance],['id' => $id]);
 }
 
 /**

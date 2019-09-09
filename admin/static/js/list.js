@@ -332,7 +332,32 @@ var app = function () {
             this.$message.error(err);
           })
       },
-
+      /**
+       * 确认进行中的订单
+       */
+      onStatus(scope,val){
+        request.get('api.php?a=loadingOrderStatus',{
+          params: {
+            id: scope.row.id,
+            status: val
+          }
+        })
+            .then(res => {
+              let {data} = res;
+              if(data.success){
+                this.$message.success(data.data);
+                this.dialog.table.row.popover = false;
+                this.dialog.table.row = val;
+                this.netTableData(true);
+              }else{
+                this.$message.error(data.errMsg);
+              }
+            })
+            .catch(err=>{
+              this.$message.error(err);
+              this.tableLoading = false;
+            })
+      },
       /**
        * 关闭弹出层
        */
@@ -384,6 +409,9 @@ var app = function () {
             let {data} = res;
 
             this.tableLoading = false;
+            data.data.list.map((value) =>{
+              Object.assign(value, {popover:false});
+            });
             this.tableData = data.data;
             cb && cb();
           })
