@@ -1,8 +1,8 @@
 <?php
 
-/*header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');*/
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Request-With,token');
 
 include "../function.php";
 //include "../lib/jwt.php";
@@ -283,6 +283,7 @@ class Api{
                 "orders.task_card_no",
                 "orders.task_card_name",
                 "orders.task_balance",
+                "orders.task_before_balance",
                 "orders.created_at",
                 "orders.updated_at"
             ],array_merge($where,['LIMIT'=>[$offset,$limit]]));

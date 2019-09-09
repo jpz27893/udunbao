@@ -304,7 +304,7 @@ function callback($id , $status , $balance , $msg){
         error('请求订单不是进行中的状态，不能回调');
     }
 
-    file_put_contents('callback.txt',date('Y-m-d H:i:s')."\t".get_client_ip()."\t".$id."\t".$status."\t".$msg.PHP_EOL,FILE_APPEND);
+    file_put_contents('callback.txt',date('Y-m-d H:i:s')."\t".get_client_ip()."\t".$id."\t".$status."\t".$balance."\t".$msg.PHP_EOL,FILE_APPEND);
 
     if($order['differ'] == 0 && $status == 1){  //成功才能为商户减款
         if(!in_array($order['user_id'],[0,1]) ){
