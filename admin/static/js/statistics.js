@@ -82,7 +82,40 @@ var app = function (){
         this.query.page = 1;
         this.netTableData(true);
       },
+      getSummaries(param) {
 
+        const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总计';
+            return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if(column.label == "交易金额"){
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+          } else if(column.label == "交易笔数"){
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+          }else {
+            sums[index] = 'N/A';
+          }
+        });
+        return sums;
+      },
       //获取表格数据
       netTableData(loading ,cb){
         this.tableLoading = loading;

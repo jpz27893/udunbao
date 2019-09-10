@@ -47,19 +47,27 @@ var app = function () {
         btnDisabled: true,
         form: {
           money: '',
+          bank_name: '',
           card_no: '',
-          bank_name: ''
+          card_name: ''
         },
         rules: {
           money: [
-            {pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: ['change', 'blur']}
-          ],
-          card_no: [
+            { required: true, message: '请输入充值金额', trigger: 'blur' },
             {pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: ['change', 'blur']}
           ],
           bank_name: [
-            {pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9]+$/, message: '不能包含特殊字符', trigger: ['change', 'blur']}
+            { required: true, message: '请输入银行名称', trigger: 'blur' },
+            {pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9\s]+$/, message: '不能包含特殊字符', trigger: ['change', 'blur']}
           ],
+          card_no: [
+            { required: true, message: '请输入卡号', trigger: 'blur' },
+            {pattern: /^[0-9]+$/, message: '不能包含字符串或其他特殊字符', trigger: ['change', 'blur']}
+          ],
+          card_name:[
+            { required: true, message: '请输入姓名', trigger: 'blur' },
+            {pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9\s]+$/, message: '不能包含特殊字符', trigger: ['change', 'blur']}
+          ]
         }
       }
     },

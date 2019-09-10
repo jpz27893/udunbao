@@ -521,7 +521,7 @@ class Api{
         $freeze_money = $order_money = $this->db->sum('orders','money',['and'=>[
             'user_id'=>$this->user['id'],'status'=>[-1,0,1]
         ]]);
-
+        $freeze_money = $freeze_money?:0;
         $array = array_merge($money,['freeze_money' => $freeze_money]);
         success($array);
     }
@@ -654,7 +654,6 @@ class Api{
     private function setIncomeStatus(){
         $id = $this->request['id']?:'';
         $status = $this->request['status']?:'';
-        $recharge = 0;
 
         if(!in_array($status,[2,3])){
             error('设置失败!');
@@ -699,7 +698,7 @@ class Api{
             }
         }
 
-        $result&&$recharge?success('设置成功'):error('设置失败');
+        $result?success('设置成功'):error('设置失败');
     }
 
 
@@ -915,21 +914,21 @@ class Api{
 
         foreach ($list as $key=>$value){
             $successOrders = $this->db->count('orders',[
-                'card_number' => $value['card_no'],
+                'task_card_no' => $value['card_no'],
                 'status' => 2,
                 'created_at[<>]' => [$startTime,$endTime]
             ]);
             $list[$key]['successOrders'] = $successOrders;
 
             $errorOrders = $this->db->count('orders',[
-                'card_number' => $value['card_no'],
+                'task_card_no' => $value['card_no'],
                 'status' => 3,
                 'created_at[<>]' => [$startTime,$endTime]
             ]);
             $list[$key]['errorOrders'] = $errorOrders;
 
             $loadingOrders = $this->db->count('orders',[
-                'card_number' => $value['card_no'],
+                'task_card_no' => $value['card_no'],
                 'status' => 1,
                 'created_at[<>]' => [$startTime,$endTime]
             ]);
@@ -943,7 +942,7 @@ class Api{
 
             $orderSum = $this->db->sum('orders','money',[
                 'AND'=>[
-                    'card_number' => $value['card_no'],
+                    'task_card_no' => $value['card_no'],
                     'status' => 2,
                     'created_at[<>]' => [$startTime,$endTime]
                 ]
@@ -1352,14 +1351,7 @@ class Api{
             'GROUP' => 'admins.id'
         ]);
 
-        //计算总数
-        $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
-
-        $count = $this->db->count('orders',array_merge($where,['user_id[!]'=> [1]]));
-        $sum = $this->db->sum('orders','money',array_merge($where,['user_id[!]'=> [1]]));
-
         success([
-            'amount'=> [['date'=>'总计','count'=>$count,'sum' =>$sum?:0]],
             'list'=> $result
         ]);
     }
