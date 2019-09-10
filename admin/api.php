@@ -1263,8 +1263,8 @@ class Api{
         $range = $this->request['range']?:'';
         $id = $this->request['id']?:'';
 
-        $startTime = date("Y-m-d", strtotime('-30 day'));
-        $endTime = date("Y-m-d");
+        $startTime = date("Y-m-d 00:00:00", strtotime('-30 day'));
+        $endTime = date("Y-m-d 23:59:59");
 
         if($range !== ''){
             if(!is_array($range)){
@@ -1288,6 +1288,7 @@ class Api{
         }
         //计算每天
         $allDays = array_reverse(prDates($startTime,$endTime));
+
         $result = [];
 
         foreach ($allDays as $key=>$value){
@@ -1300,7 +1301,7 @@ class Api{
         }
 
         //计算总数
-        $where['AND']['created_at[<>]'] = [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))];
+        $where['AND']['created_at[<>]'] = [$startTime,$endTime];
         $count = $this->db->count('orders',$where);
 
         $sum = $this->db->sum('orders','money',$where);
@@ -1346,11 +1347,10 @@ class Api{
             'AND'=>[
                 'admins.id[!]'=> [1],
                 'orders.status' => 2,
-                'orders.created_at[<>]' => [date("Y-m-d 00:00:00",strtotime($startTime)),date("Y-m-d 23:59:59",strtotime($endTime))],
+                'orders.created_at[<>]' => [date("Y-m-d H:i:s",strtotime($startTime)),date("Y-m-d H:i:s",strtotime($endTime))],
             ],
             'GROUP' => 'admins.id'
         ]);
-
         success([
             'list'=> $result
         ]);
