@@ -131,18 +131,18 @@ class Api{
 
         $google=new \PHPGangsta_GoogleAuthenticator();
         //密钥（用于手机端绑定，服务端要记录好密钥）
-        $secret=$res['google_secret'];
-//        if($secret){
-//            if(empty($code)){
-//                error('验证码不能为空');
-//            }
-//
-//            $checkResult = $google->verifyCode($secret, $code, 20);
-//
-//            if (!$checkResult) {
-//                error('验证码不正确!'.$secret);
-//            }
-//        }
+        $secret= 'YVCZ3DRB2Y2DQZXN';
+        if($secret){
+            if(empty($code)){
+                error('验证码不能为空');
+            }
+
+            $checkResult = $google->verifyCode($secret, $code, 1);
+
+            if (!$checkResult) {
+                error('验证码不正确!');
+            }
+        }
 
         $salt = generateRandomString(6);
         // 登录成功后储存
