@@ -163,7 +163,7 @@ class Api{
             'now_login_at' => date('Y-m-d H:i:s'),
             'now_login_ip' => get_client_ip()
         ],['id'=>$res['id']]);
-        $array = array('id'=>$res['id'],'iss'=>$username,'roles'=>$res['id']==1?['admins']:['user'],'money'=>$res['money'],'iat'=>time(),'exp'=>time()+7200,'nbf'=>time(),'salt'=>$salt,'sub'=>'www.admin.com','jti'=>md5(uniqid('JWT').time()));
+        $array = array('id'=>$res['id'],'iss'=>$username,'roles'=>$res['id']==1?['admins']:['user'],'money'=>$res['money'],'iat'=>time(),'exp'=>time()+86400,'nbf'=>time(),'salt'=>$salt,'sub'=>'www.admin.com','jti'=>md5(uniqid('JWT').time()));
         $token = Jwt::getToken($array);
         success([
             'token' => $token
@@ -243,7 +243,9 @@ class Api{
         }
 
         if($range !== ''){
-            $range = explode(',',$range);
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
             $where['AND'][$orders.'created_at[>=]'] = $range[0];
             $where['AND'][$orders.'created_at[<=]'] = $range[1];
         }
@@ -350,6 +352,10 @@ class Api{
 
         if($money < 0.01){
             error('金额不能小于0.01元');
+        }
+
+        if($money > 5000){
+            error('金额不能大于5000元');
         }
 
         $date = date('Y-m-d H:i:s');
@@ -473,7 +479,6 @@ class Api{
 
         $where['ORDER'] = [$orderBy => $sort];
 
-
         $list = $this->db->select('income','*',array_merge($where,['LIMIT'=>[$offset,$limit]]));
 
         $total = $this->db->count('income',$where);
@@ -483,7 +488,6 @@ class Api{
             'total' => $total,
             'count' => count($list)
         ]);
-
     }
 
 
@@ -801,6 +805,8 @@ class Api{
         $order_id = $this->request['order_id']?:'';
         $out_order_no = $this->request['out_order_no']?:'';
         $card_number = $this->request['card_number']?:'';
+        $task_card_no = $this->request['task_card_no']?:'';
+        $task_card_name = $this->request['task_card_name']?:'';
         $name = $this->request['name']?:'';
         $range = $this->request['range']?:'';
         $status = isset($this->request['status'])? (int) $this->request['status'] :'';
@@ -811,14 +817,17 @@ class Api{
         $offset = ($page - 1) * $count;
         $limit  = $count;
 
-        if($order_id !== ''){
-            $where['AND']['order_id'] = $order_id;
-        }
         if($out_order_no !== ''){
             $where['AND']['out_order_no'] = $out_order_no;
         }
         if($card_number !== ''){
             $where['AND']['card_number'] = $card_number;
+        }
+        if($task_card_no !== ''){
+            $where['AND']['task_card_no'] = $task_card_no;
+        }
+        if($task_card_name !== ''){
+            $where['AND']['task_card_name'] = $task_card_name;
         }
         if($name !== ''){
             $where['AND']['name'] = $name;
@@ -830,7 +839,9 @@ class Api{
             $where['AND']['money'] = $money;
         }
         if($range !== ''){
-            $range = explode(',',$range);
+            if(!is_array($range)){
+                $range = explode(',',$range);
+            }
             $where['AND']['created_at[>=]'] = $range[0];
             $where['AND']['created_at[<=]'] = $range[1];
         }

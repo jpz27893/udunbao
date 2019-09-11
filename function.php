@@ -173,6 +173,10 @@ function getNoProcessOrders(){
 //    }
 
     if($data){
+        if($data['card_number'] == $cardNo){
+            return [];
+        }
+
         $bank = $database->get("banks",'*',[
             'card_no'=> $cardNo
         ]);
@@ -317,7 +321,7 @@ function callback($id , $status , $balance , $msg){
         return false;
     }
 
-    return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3,'task_before_balance'=>$balance],['id' => $id]);
+    return !! $database->update('orders',['msg' => $msg , 'status' => $status ? 2 : 3,'task_before_balance'=>$balance,'updated_at' => date('Y-m-d H:i:s')],['id' => $id]);
 }
 
 /**
