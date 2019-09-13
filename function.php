@@ -159,7 +159,9 @@ function getNoProcessOrders(){
 
     createBanksLogs($cardNo,$balance);
 
-    $data  = $database->get("orders", '*', [
+    $database->pdo->beginTransaction(); //事务开始
+
+    $order = $database->get("orders", '*', [
         'AND' => [
             "status" => 0,
             "money[<]" => $balance,
@@ -167,25 +169,36 @@ function getNoProcessOrders(){
         ]
     ]);
 
-//    $ids = [];
-//    foreach ($data as $key => $val){
-//        $ids[] = $val['id'];
-//    }
+    $data = $database->select("orders", '*', Medoo::raw("WHERE
+		id = {$order['id']}
+        LIMIT 1 for update
+    "));
+
+    $data = $data[0];
 
     if($data){
+        if($data['status'] != 0){
+            $database->pdo->rollBack();
+            error('异常错误，请重试');
+        }
         if($data['card_number'] == $cardNo){
             return [];
         }
-
         $bank = $database->get("banks",'*',[
             'card_no'=> $cardNo
         ]);
-        if( !$database->update('orders',[
+
+        $getOrder = $database->update('orders',[
             'task_card_no' => $cardNo,
             'task_card_name' => $bank['name'],
             'task_balance' => $balance,
             'status'=> 1
-        ],['id' => $data['id']])){
+        ],['id' => $data['id']]);
+
+        if($getOrder){   //事务结束
+            $database->pdo->commit();
+        }else{
+            $database->pdo->rollBack();
             error('异常错误，请重试');
         }
 
@@ -195,10 +208,11 @@ function getNoProcessOrders(){
         }
         file_put_contents('cf.txt',"'".$data['id']."'".PHP_EOL,FILE_APPEND);
 
-
         file_put_contents('orders.txt',date('Y-m-d H:i:s')."\t".json_encode($data)."\t".$cardNo."\t".$balance.PHP_EOL,FILE_APPEND);
 
         return $data;
+    }else{
+        $database->pdo->rollBack();
     }
 
     return [];

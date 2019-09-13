@@ -151,7 +151,7 @@ class Api{
             'user_id' => $res['id'],
             'salt' => $salt,
             'ip' => get_client_ip(),
-            'life_at' => date("Y-m-d H:i:s", strtotime("1 hour")),
+            'life_at' => date("Y-m-d H:i:s", strtotime("24 hour")),
             'created_at' => $date,
             'updated_at' => $date
         ]);
